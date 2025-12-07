@@ -1,0 +1,355 @@
+﻿@model WebApplication1.ViewModels.ProFileVM
+@{
+    ViewData["Title"] = "Chỉnh Sửa Thông Tin Cá Nhân";
+    // Get the current image file name for display
+    var currentImage = ViewData["ImgaeFileName"] as string ?? "default-avatar.png"; // Provide a default
+}
+
+<style>
+    /* 1. Variables & Base Styles (Reusing from previous styles) */
+    :root {
+        --primary-color: #007bff; /* Blue */
+        --primary-hover: #0056b3;
+        --success-color: #198754; /* Bootstrap Green */
+        --success-hover: #157347;
+        --secondary-color: #6c757d; /* Gray */
+        --border-color: #dee2e6;
+        --bg-light: #f8fafc;
+        --text-dark: #212529;
+        --text-muted: #6c757d;
+        --shadow-soft: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        --input-disabled-bg: #e9ecef; /* Disabled background */
+    }
+
+    .profile-page-container {
+        background-color: var(--bg-light);
+        padding-bottom: 4rem;
+    }
+
+    .profile-container {
+        max-width: 900px;
+        margin: 3rem auto;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 2. Profile Card */
+    .profile-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+    }
+
+    .profile-card-header {
+        background: var(--bg-light);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        .profile-card-header h3 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-card-header i {
+            color: var(--primary-color);
+        }
+
+    /* 3. Card Body Layout */
+    .profile-card-body {
+        padding: 2.5rem;
+        display: grid;
+        grid-template-columns: 1fr; /* Default 1 column */
+        gap: 2.5rem;
+    }
+
+    /* 4. Avatar Section (Left) */
+    .profile-avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .avatar-preview-container {
+        position: relative; /* For overlay button */
+        margin-bottom: 1rem;
+    }
+
+    .avatar-img-preview { /* Changed class */
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: block; /* Ensure it behaves like a block */
+    }
+
+    /* Styled File Input */
+    .avatar-upload-label {
+        display: inline-block; /* Or block */
+        padding: 0.6rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 2rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+        .avatar-upload-label:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .avatar-upload-label i {
+            margin-right: 0.5rem;
+        }
+
+    #Hinh { /* Hide the actual file input */
+        display: none;
+    }
+
+
+    /* 5. Info Form Section (Right) */
+    .profile-info-form {
+        /* No specific styles needed for the container */
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select { /* Apply to select too */
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        background-color: #fff; /* Ensure white background */
+        color: var(--text-dark); /* Ensure text color */
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+        /* Style for readonly input */
+        .form-control[readonly] {
+            background-color: var(--input-disabled-bg);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    /* Remove default arrows for number inputs (optional) */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    /* 6. Card Footer for Buttons */
+    .profile-card-footer {
+        padding: 1.5rem 2.5rem;
+        background: var(--bg-light);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end; /* Align buttons right */
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.25rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+        color: white;
+    }
+
+        .btn-success:hover {
+            background-color: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+        }
+
+    .btn-secondary-outline {
+        background-color: transparent;
+        border: 2px solid var(--secondary-color);
+        color: var(--secondary-color);
+    }
+
+        .btn-secondary-outline:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+    /* Responsive */
+    @@media (min-width: 768px) {
+        .profile-card-body {
+            grid-template-columns: 220px 1fr; /* Fixed width for avatar column */
+        }
+    }
+</style>
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Chỉnh sửa thông tin</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a asp-action="ProFile">Hồ sơ</a></li>
+        <li class="breadcrumb-item active text-white">Chỉnh sửa</li>
+    </ol>
+</div>
+<div class="profile-page-container">
+    <div class="profile-container">
+        <form asp-action="editFrofile" enctype="multipart/form-data">
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h3><i class="bi bi-pencil-square"></i> Chỉnh Sửa Thông Tin Cá Nhân</h3>
+                </div>
+
+                <div class="profile-card-body">
+                    <div class="profile-avatar-section">
+                        <div class="avatar-preview-container">
+                            <img src="/Hinh/KhachHang/@currentImage" class="avatar-img-preview" alt="Ảnh đại diện hiện tại" id="avatarPreview">
+                        </div>
+                        <label for="Hinh" class="avatar-upload-label">
+                            <i class="bi bi-upload"></i> Chọn ảnh mới
+                        </label>
+                        <input asp-for="Hinh" type="file" class="form-control" accept="image/*" />
+                        <span asp-validation-for="Hinh" class="text-danger"></span>
+                        <small class="text-muted mt-2 d-block">JPG, PNG hoặc GIF. Tối đa 5MB.</small>
+                    </div>
+
+                    <div class="profile-info-form">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="MaKh" /> <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label asp-for="MaKh" class="form-label">Tên đăng nhập</label>
+                                <input asp-for="MaKh" class="form-control" readonly />
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="HoTen" class="form-label">Họ và tên</label>
+                                <input asp-for="HoTen" type="text" class="form-control" placeholder="Nhập họ và tên...">
+                                <span asp-validation-for="HoTen" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="GioiTinh" class="form-label">Giới tính</label>
+                                <select asp-for="GioiTinh" class="form-select">
+                                    @* Use form-select for dropdowns *@
+                                    <option value="True">Nam</option>
+                                    <option value="False">Nữ</option>
+                                </select>
+                                <span asp-validation-for="GioiTinh" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="NgaySinh" class="form-label">Ngày sinh</label>
+                                <input asp-for="NgaySinh" type="date" class="form-control" />
+                                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 form-group">
+                                <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
+                                <input asp-for="DiaChi" class="form-control" placeholder="Nhập địa chỉ..." />
+                                <span asp-validation-for="DiaChi" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="DienThoai" class="form-label">Điện thoại</label>
+                                <input asp-for="DienThoai" type="tel" class="form-control" placeholder="Nhập số điện thoại..." />
+                                <span asp-validation-for="DienThoai" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="Nhập địa chỉ email..." />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card-footer">
+                    <a asp-action="ProFile" class="btn btn-secondary-outline">
+                        <i class="bi bi-x-circle"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle-fill"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Avatar Preview Script
+        const avatarInput = document.getElementById('Hinh');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        if (avatarInput && avatarPreview) {
+            avatarInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // Optionally reset to default or show error if not an image
+                    // avatarPreview.src = '/path/to/default-avatar.png';
+                }
+            });
+        }
+    </script>
+}

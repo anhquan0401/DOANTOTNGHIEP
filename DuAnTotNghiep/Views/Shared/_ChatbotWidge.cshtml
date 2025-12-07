@@ -1,0 +1,377 @@
+﻿
+@if (User.Identity.IsAuthenticated)
+{
+    <div id="chatbot-widget">
+        <div id="chatbot-box" class="hidden">
+            <div id="chatbot-header">
+                <div class="chatbot-avatar"></div>
+                <div class="chatbot-title">
+                    <span>Chat Hỗ Trợ</span>
+                    <small>Thường trả lời sau vài giây</small>
+                </div>
+                <button id="close-chatbot">&times;</button>
+            </div>
+            <div id="chatbot-messages">
+            </div>
+            <div id="chatbot-input">
+                <input type="text" id="chatbot-question" placeholder="Nhập câu hỏi..." autocomplete="off" />
+                <button id="send-chatbot" aria-label="Gửi">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px">
+                        <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <button id="chatbot-toggle" aria-label="Mở chat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="30px" height="30px">
+                <path fill-rule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.707 6.707 0 001.196-.106l.162.098a6.703 6.703 0 003.736 1.182h.001a6.702 6.702 0 003.737-1.182l.161-.098A6.707 6.707 0 0018 21.75c.365 0 .72-.03 1.065-.084l.147.086a6.703 6.703 0 003.57 1.149 1.5 1.5 0 001.488-1.716l-.8-3.991a6.709 6.709 0 00-.53-2.144c.54-.78.859-1.72.859-2.75 0-2.8-2.2-5.1-4.881-5.323-.11-.242-.23-.48-.359-.712a6.702 6.702 0 00-5.207-3.832 6.703 6.703 0 00-7.667 4.111 6.702 6.702 0 00-6.262 5.43l-.285.01c-.11.002-.22.007-.33.018a6.707 6.707 0 00-1.196.106l-.162-.098A6.703 6.703 0 00.22 13.132a6.703 6.703 0 003.57 5.61l.148.086A6.708 6.708 0 004.804 21.644z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+}
+
+<style>
+    /* 1. Biến màu sắc và Kiểu dáng chung */
+    :root {
+        --primary-color: #007bff;
+        --primary-hover: #0056b3;
+        --bg-light: #f4f7f6;
+        --border-color: #e2e8f0;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbot-widget {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        z-index: 2000;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* 2. Nút Bấm Mở Chat */
+    #chatbot-toggle {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
+    }
+
+        #chatbot-toggle:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: var(--shadow-lg);
+        }
+
+    /* 3. Hộp Chat */
+    #chatbot-box {
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        /* Vị trí & Hiệu ứng */
+        position: absolute;
+        bottom: 30px; /* Nằm bên trên nút bấm */
+        right: 55px;
+        transform-origin: bottom right;
+        /* Trạng thái mặc định (hiển thị) */
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        visibility: visible;
+        transition: all 0.3s ease-out;
+    }
+
+        /* 4. Trạng thái Ẩn của Hộp Chat */
+        #chatbot-box.hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            visibility: hidden;
+        }
+
+    /* 5. Header của Hộp Chat */
+    #chatbot-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        color: white;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .chatbot-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        /* Bạn có thể thêm ảnh avatar của bot ở đây */
+        /* background-image: url('/path/to/bot-avatar.png'); */
+        background-color: rgba(255,255,255,0.3);
+        border: 2px solid white;
+    }
+
+    .chatbot-title {
+        flex: 1;
+        line-height: 1.3;
+    }
+
+        .chatbot-title span {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .chatbot-title small {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+    #close-chatbot {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 200;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: all 0.2s ease;
+        padding: 0;
+        line-height: 1;
+    }
+
+        #close-chatbot:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+    /* 6. Khung Tin Nhắn */
+    #chatbot-messages {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        background: var(--bg-light);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem; /* Khoảng cách giữa các tin nhắn */
+    }
+
+    /* 7. Bong Bóng Tin Nhắn */
+    .message {
+        padding: 0.75rem 1rem;
+        border-radius: 1.25rem;
+        max-width: 85%;
+        line-height: 1.5;
+        font-size: 0.9375rem;
+        word-wrap: break-word;
+        animation: messageFadeIn 0.4s ease-out; /* Hiệu ứng mờ */
+    }
+
+    .message-user {
+        background: var(--primary-color);
+        color: white;
+        border-bottom-right-radius: 0.25rem;
+        margin-left: auto; /* Đẩy sang phải */
+    }
+
+    .message-bot {
+        background: white;
+        color: var(--text-dark);
+        border-bottom-left-radius: 0.25rem;
+        margin-right: auto; /* Đẩy sang trái */
+        border: 1px solid var(--border-color);
+    }
+
+    /* 8. Khung Nhập Liệu */
+    #chatbot-input {
+        display: flex;
+        border-top: 1px solid var(--border-color);
+        background: white;
+        padding: 0.5rem;
+        border-radius: 0 0 1rem 1rem;
+        gap: 0.5rem;
+    }
+
+        #chatbot-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+            #chatbot-input input:focus {
+                border-color: var(--primary-color);
+            }
+
+        #chatbot-input button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+            #chatbot-input button:hover {
+                background: var(--primary-hover);
+                transform: scale(1.05);
+            }
+
+    .related-products {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .product-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        width: 100%;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+    .product-info {
+        flex: 1;
+    }
+
+        .product-info strong {
+            display: block;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .product-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 2px 0;
+        }
+
+        .product-info .price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+    .message-bot .related-products {
+        width: 100%;
+    }
+
+
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const messageBox = $("#chatbot-messages");
+
+        // Khi bấm nút mở chat
+        $("#chatbot-toggle").on("click", function () {
+            // Thêm tin nhắn chào mừng nếu đây là lần đầu mở
+            if ($("#chatbot-box").hasClass("hidden") && messageBox.children().length === 0) {
+                messageBox.append('<div class="message message-bot">👋 Chào bạn! Tôi có thể giúp gì cho bạn?</div>');
+            }
+            $("#chatbot-box").toggleClass("hidden");
+        });
+
+        // Khi bấm nút đóng chat
+        $("#close-chatbot").on("click", function () {
+            $("#chatbot-box").addClass("hidden");
+        });
+
+        // Hàm gửi tin nhắn
+        function sendMessage() {
+            const question = $("#chatbot-question").val().trim();
+            if (!question) return;
+
+            // --- THAY ĐỔI: Thêm tin nhắn với class .message-user ---
+            messageBox.append(`<div class="message message-user">${question}</div>`);
+            $("#chatbot-question").val("");
+            // Cuộn xuống tin nhắn mới nhất
+            messageBox.scrollTop(messageBox[0].scrollHeight);
+
+            // Thêm chỉ báo "Bot đang nhập..." (Tùy chọn)
+            messageBox.append('<div class="message message-bot" id="bot-typing">...</div>');
+            messageBox.scrollTop(messageBox[0].scrollHeight);
+
+            $.ajax({
+                url: "/chatbot/ask", // Đảm bảo URL này chính xác
+                method: "POST",
+                data: { question },
+                success: function (data) {
+                    console.log("🟢 Data nhận được từ API:", data);
+                    $("#bot-typing").remove();
+                    const answer = data.llm_answers || data.error || "Rất tiếc, tôi không thể trả lời câu hỏi này.";
+                    messageBox.append(`<div class="message message-bot">${answer}</div>`);
+
+                        if (data.related_products && data.related_products.length > 0) {
+                        let productHTML = '<div class="related-products">';
+                        data.related_products.forEach(p => {
+                            productHTML += `
+                                <div class="product-card">
+                                    <a href="/Shop/Details/${p.maHH}">
+                                        <img src="/Hinh/HangHoa/${p.hinh || 'noimage.png'}" alt="${p.tenHH}" />
+                                    </a>
+                                    <div class="product-info">
+                                        <strong>${p.tenHH}</strong>
+                                        <p>${p.moTa || ''}</p>
+                                        <span class="price">${(p.donGia || 0).toLocaleString()} ₫</span>
+                                    </div>
+                                </div>`;
+                        });
+                        productHTML += '</div>';
+                        $(productHTML).appendTo(messageBox);
+                    }
+                    messageBox.scrollTop(messageBox[0].scrollHeight);
+                }
+            });
+        }
+
+        // Khi bấm nút Gửi
+        $("#send-chatbot").on("click", sendMessage);
+
+        // Khi bấm Enter trong ô input
+        $("#chatbot-question").on("keypress", function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,222 @@
+﻿@model WebApplication1.Areas.Admin.Models.LoginAdminVM
+@{
+    ViewData["Title"] = "Đăng Nhập Nhân viên";
+    Layout = null; // Trang login thường không dùng chung Layout với trang Admin bên trong
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"]</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Global */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Login Container */
+        .login-box {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Logo/Header */
+        .login-logo {
+            margin-bottom: 20px;
+        }
+
+            .login-logo b {
+                color: #764ba2;
+                font-size: 32px;
+                font-weight: 700;
+            }
+
+            .login-logo span {
+                color: #333;
+                font-size: 32px;
+                font-weight: 400;
+            }
+
+        .login-box-msg {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 45px; /* Padding left cho icon */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .form-control:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+        /* Icons inside Input */
+        .form-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .form-control:focus + .form-icon,
+        .form-control:valid + .form-icon {
+            color: #667eea;
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+            }
+
+        /* Links */
+        .auth-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+            .auth-links a {
+                color: #666;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+                .auth-links a:hover {
+                    color: #764ba2;
+                }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+            .checkbox-container input {
+                margin-right: 8px;
+                accent-color: #764ba2;
+                width: 16px;
+                height: 16px;
+            }
+
+        /* Validation Error */
+        .text-danger {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: block;
+            text-align: left;
+        }
+
+        .validation-message {
+            font-size: 12px;
+            color: #e74c3c;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Admin</b><span>Panel</span></a>
+        </div>
+
+        <p class="login-box-msg">Chào mừng quay trở lại!</p>
+
+        <form asp-area="Admin" asp-controller="AccountAdmin" asp-action="LoginAdmin" method="post">
+
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+            <div class="form-group">
+                <input asp-for="@Model.Email" type="text" class="form-control" placeholder="Email hoặc Tên đăng nhập" required />
+                <i class="fas fa-envelope form-icon"></i> <span asp-validation-for="@Model.Email" class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <input asp-for="@Model.MatKhau" type="password" class="form-control" placeholder="Mật khẩu" required />
+                <i class="fas fa-lock form-icon"></i>
+                <span asp-validation-for="@Model.MatKhau" class="validation-message"></span>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe" style="cursor:pointer">Ghi nhớ đăng nhập</label>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Đăng nhập <i class="fas fa-arrow-right" style="margin-left:5px;"></i>
+            </button>
+
+            <div class="auth-links">
+                <a href="#">Quên mật khẩu?</a>
+                <a asp-action="RegisterAdmin" asp-controller="AccountAdmin">Đăng ký mới</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

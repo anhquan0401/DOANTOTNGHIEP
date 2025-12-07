@@ -1,0 +1,174 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    <!-- Chat Button -->
+    <button id="openChatBtn" class="btn btn-primary">
+        <i class="fa fa-comments"></i> Tin nhắn
+    </button>
+
+    <!-- Chat Box -->
+    <div id="adminChatBox" class="card shadow" style="display: none;">
+        <div class="card-header">
+            <span id="selectedUserName">💬 Khách hàng</span>
+            <button class="btn-close btn-close-white" id="closeChatBtn">✕</button>
+        </div>
+        <div class="card-body">
+            <ul id="userList" class="list-group">
+                <!-- User list will be loaded here -->
+            </ul>
+            <div id="messageContainer"></div>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <input id="messageInput" type="text" class="form-control" placeholder="💬 Nhập tin nhắn..." />
+                <button id="sendMsgBtn" class="btn btn-success">
+                    <i class="fa fa-send"></i> Gửi
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        let selectedUserId = "";
+        let selectedUserName = "";
+        let unreadCount = 0;
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub", {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets,
+                withCredentials: true
+            })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.start()
+            .then(() => {
+                console.log("✅ Admin connected successfully");
+                loadUserChatList();
+            })
+            .catch(err => console.error("❌ Connection error:", err));
+
+        connection.on("NewIncomingMessage", function (fromUserId, senderName, time) {
+            unreadCount++;
+            $("#openChatBtn").html(`<i class="fa fa-comments"></i> Tin nhắn (${unreadCount})`);
+            console.log("🔔 Tin nhắn mới từ:", senderName);
+        });
+
+        // Nhận tin nhắn
+        connection.on("ReceiveMessage", function (fromId, message, time) {
+            console.log("📨 Nhận tin từ:", fromId);
+            console.log("🎯 User đang chọn:", selectedUserId);
+
+            // QUAN TRỌNG: Chỉ hiển thị nếu đang chat với user này
+            if (fromId === selectedUserId) {
+                appendMessage(selectedUserName, message, "text-start text-primary");
+            } else {
+                console.log("⚠️ Tin nhắn từ user khác, không hiển thị");
+            }
+        });
+
+        // Tin nhắn đã gửi
+        connection.on("MessageSent", function (toId, message, time) {
+            console.log("✅ Đã gửi tới:", toId);
+            console.log("🎯 User đang chọn:", selectedUserId);
+
+            // MessageSent luôn hiển thị vì đây là tin nhắn MÌNH vừa gửi
+            if (selectedUserId) {
+                appendMessage("Bạn", message, "text-end text-success");
+            }
+        });
+
+        function selectUser(id, name) {
+            // ID đã được format sẵn từ API ("user_KH007")
+            selectedUserId = id;
+            selectedUserName = name;
+            $("#selectedUserName").text(`💬 ${name}`);
+            $("#messageContainer").empty();
+
+            // Highlight user được chọn
+            $("#userList .list-group-item").removeClass("active bg-warning");
+            $("#userList .list-group-item").each(function() {
+                if ($(this).text().includes(name)) {
+                    $(this).addClass("active");
+                }
+            });
+
+            unreadCount = 0;
+            $("#openChatBtn").html(`<i class="fa fa-comments"></i> Tin nhắn`);
+
+            console.log("✅ Đã chọn user:", name, "| ID:", selectedUserId);
+        }
+
+        $("#openChatBtn").click(() => {
+            $("#adminChatBox").fadeIn(300);
+            unreadCount = 0;
+            $("#openChatBtn").html(`<i class="fa fa-comments"></i> Tin nhắn`);
+        });
+
+        $("#closeChatBtn").click(() => $("#adminChatBox").fadeOut(300));
+
+        function loadUserChatList() {
+            fetch("/AdminChat/GetAllUsers")
+                .then(res => res.json())
+                .then(data => {
+                    console.log("📋 Danh sách users từ API:", data);
+                    const list = $("#userList");
+                    list.empty();
+                    data.forEach(user => {
+                        console.log(`   - ${user.hoTen} (ID: ${user.maKh})`);
+                        const li = $(`<li class="list-group-item list-group-item-action">👤 ${user.hoTen}</li>`);
+                        // user.maKh đã có format "user_KH007" từ API
+                        li.click(() => selectUser(user.maKh, user.hoTen));
+                        list.append(li);
+                    });
+                })
+                .catch(err => console.error("❌ Load users error:", err));
+        }
+
+        $("#sendMsgBtn").click(function () {
+            sendMessage();
+        });
+
+        $("#messageInput").keypress(function(e) {
+            if(e.which == 13) {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const msg = $("#messageInput").val().trim();
+
+            if (!msg) return;
+
+            if (!selectedUserId) {
+                alert("Hãy chọn khách hàng để nhắn tin!");
+                return;
+            }
+
+            console.log("📤 Gửi tin tới:", selectedUserId, "Nội dung:", msg);
+
+            connection.invoke("SendMessage", selectedUserId, msg)
+                .then(() => {
+                    console.log("✅ Tin nhắn đã được gửi");
+                })
+                .catch(err => {
+                    console.error("❌ Send error:", err);
+                    alert("Không thể gửi tin nhắn!");
+                });
+
+            $("#messageInput").val("");
+        }
+
+        function appendMessage(sender, message, cssClass) {
+            const div = $(`<div class="${cssClass} mb-2 p-2">
+                <div><strong>${sender}:</strong> ${message}</div>
+                <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+            </div>`);
+            $("#messageContainer").append(div);
+            $("#messageContainer").scrollTop($("#messageContainer")[0].scrollHeight);
+        }
+    </script>

@@ -1,0 +1,198 @@
+﻿@model WebApplication1.Areas.Admin.Models.RegisterAdminVM
+@{
+    ViewData["Title"] = "Đăng ký nhân viên";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"]</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS Global (Giống trang Login) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; /* Dùng min-height để tránh lỗi khi nội dung dài */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Thêm padding cho mobile */
+        }
+
+        .register-box {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px; /* Rộng hơn login xíu vì nhiều trường hơn */
+            text-align: center;
+        }
+
+        .login-logo b {
+            color: #764ba2;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .login-logo span {
+            color: #333;
+            font-size: 32px;
+            font-weight: 400;
+        }
+
+        .login-box-msg {
+            color: #666;
+            margin: 20px 0 30px;
+            font-size: 15px;
+        }
+
+        /* --- Form Styles --- */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .form-control:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+        .form-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%; /* Canh giữa icon theo chiều dọc */
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+        }
+
+        .form-control:focus + .form-icon {
+            color: #667eea;
+        }
+
+        /* --- Button --- */
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+            .btn-register:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+            }
+
+        /* --- Link --- */
+        .auth-links {
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+            .auth-links a {
+                color: #666;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+                .auth-links a:hover {
+                    color: #764ba2;
+                }
+
+        /* --- Validation --- */
+        .text-danger {
+            color: #e74c3c;
+            font-size: 13px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .validation-summary ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 15px;
+            text-align: left;
+            background: #fdecea;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <div class="login-logo">
+            <a href="#"><b>Admin</b><span>Panel</span></a>
+        </div>
+
+        <p class="login-box-msg">Tạo tài khoản nhân viên mới</p>
+
+        <form asp-area="Admin" asp-controller="AccountAdmin" asp-action="RegisterAdmin" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+
+            <div class="form-group">
+                <input asp-for="HoTen" class="form-control" placeholder="Họ và tên" required />
+                <i class="fas fa-user form-icon"></i>
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input asp-for="Email" type="email" class="form-control" placeholder="Email liên hệ" required />
+                <i class="fas fa-envelope form-icon"></i>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input asp-for="MatKhau" type="password" class="form-control" placeholder="Mật khẩu" required />
+                <i class="fas fa-lock form-icon"></i>
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-register">
+                <i class="fas fa-user-plus"></i> Đăng ký ngay
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <p>Bạn đã có tài khoản? <a asp-action="LoginAdmin" asp-controller="AccountAdmin">Đăng nhập tại đây</a></p>
+        </div>
+    </div>
+
+</body>
+</html>

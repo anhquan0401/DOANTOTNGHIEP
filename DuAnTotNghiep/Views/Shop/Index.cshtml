@@ -1,0 +1,138 @@
+﻿@model IEnumerable<WebApplication1.ViewModels.HangHoaVM>
+@{
+    ViewData["Title"] = "Cửa hàng";
+    Layout = "_DanhSachHangHoa";
+    var totalPages = ViewBag.TotalPages;
+    var currentPages = ViewBag.CurrentPage;
+    var loais = ViewBag.Loais;
+}
+
+@section HeaderStart {
+    <div class="container-fluid page-header py-5" style="background: url('../img/b2.jpg') !important;">
+        <h1 class="text-center text-white display-6">Shop</h1>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item active text-white">Shop</li>
+        </ol>
+    </div>
+}
+
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="product-grid-wrapper row g-4 animate-fade-in">
+            @await Html.PartialAsync("ProductsItem", Model)
+        </div>
+    </div>
+</div>
+
+<div class="col-12 pb-5">
+    <div class="pagination-container d-flex justify-content-center mt-4">
+
+        @if (currentPages == 1)
+        {
+            <span class="page-link disabled"><i class="fa fa-angle-double-left"></i></span>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", new { loai = loais, page = currentPages - 1 })" class="page-link shadow-sm">
+                <i class="fa fa-angle-double-left"></i>
+            </a>
+        }
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            // Logic hiển thị thông minh: Chỉ hiện trang đầu, trang cuối, và các trang xung quanh trang hiện tại
+            if (i == 1 || i == totalPages || (i >= currentPages - 1 && i <= currentPages + 1))
+            {
+                <a href="@Url.Action("Index", new { loai = loais, page = i })"
+                   class="page-link shadow-sm @(i == currentPages ? "active" : "")">
+                    @i
+                </a>
+            }
+            else if (i == currentPages - 2 || i == currentPages + 2)
+            {
+                <span class="page-dots">...</span>
+            }
+        }
+
+        @if (currentPages == totalPages)
+        {
+            <span class="page-link disabled"><i class="fa fa-angle-double-right"></i></span>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", new { loai = loais, page = currentPages + 1 })" class="page-link shadow-sm">
+                <i class="fa fa-angle-double-right"></i>
+            </a>
+        }
+    </div>
+</div>
+
+<style>
+    /* --- 1. Hiệu ứng Animation xuất hiện --- */
+    .animate-fade-down {
+        animation: fadeDown 1s ease-out;
+    }
+
+    .animate-fade-up {
+        animation: fadeUp 1s ease-out;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 1.5s ease;
+    }
+
+    /* --- 2. Pagination (Phân trang hiện đại) --- */
+    .pagination-container {
+        gap: 10px; /* Khoảng cách giữa các nút */
+        align-items: center;
+    }
+
+    .page-link {
+        width: 45px;
+        height: 45px;
+        border-radius: 50% !important; /* Biến thành hình tròn */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #555;
+        background-color: #fff;
+        border: none; /* Bỏ viền mặc định */
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
+        text-decoration: none;
+    }
+
+        /* Hiệu ứng Hover */
+        .page-link:hover:not(.disabled) {
+            background-color: #0d6efd; /* Màu xanh Primary (có thể đổi thành màu cam nếu thích) */
+            color: #fff;
+            transform: translateY(-5px); /* Bay lên nhẹ */
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3); /* Bóng đổ màu xanh */
+        }
+
+        /* Trang đang Active */
+        .page-link.active {
+            background-color: #0d6efd;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+            transform: scale(1.1); /* Phóng to nhẹ */
+            pointer-events: none; /* Không cho click lại */
+        }
+
+        /* Nút Disabled (Vô hiệu hóa) */
+        .page-link.disabled {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+    /* Dấu ba chấm (...) */
+    .page-dots {
+        color: #999;
+        font-weight: bold;
+        padding: 0 5px;
+    }
+</style>

@@ -1,0 +1,165 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link.active,
+.fixed-top.bg-white .navbar .navbar-nav .nav-link:hover,
+.fixed-top.bg-white .navbar .navbar-nav .nav-link.active {
+    color: black !important;
+}
+
+.fruite .fruite-categorie .fruite-name .active {
+    color: black !important;
+}
+
+.text-primary-important {
+    color: #000000 !important;
+}
+
+.position-relative a {
+    color: #000000 !important;
+}
+
+.form-control1 {
+    width: 70%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #747d88;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 10px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.suggestion-list {
+    border: 1px solid #ccc;
+    background-color: white;
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+    .suggestion-item a {
+        text-decoration: none;
+        color: black;
+        display: block;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+
+/* Cài ??t màu cho thông báo thành công */
+.toast-custom.toast-success {
+    background-color: #4CAF50; /* Màu xanh lá */
+    color: white;
+}
+
+/* Cài ??t màu cho thông báo l?i */
+.toast-custom.toast-error {
+    background-color: #F44336; /* Màu ?? */
+    color: white;
+}
+
+/* Cài ??t màu cho thông báo thông tin */
+.toast-custom.toast-info {
+    background-color: #2196F3; /* Màu xanh d??ng */
+    color: white;
+}
+
+/* Cài ??t màu cho thông báo c?nh báo */
+.toast-custom.toast-warning {
+    background-color: #FF9800; /* Màu cam */
+    color: white;
+}
+
+
+
+
+
+/* Định dạng khung sản phẩm */
+.fruite-item {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+    .fruite-item:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+
+/* Định dạng cho ảnh sản phẩm */
+.fruite-img {
+    width: 100% !important;
+    height: 220px !important; /* Cố định chiều cao */
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+    .fruite-img img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important; /* Cắt ảnh cho vừa khung, không méo */
+    }
+
+/* Định dạng nội dung sản phẩm */
+.fruite-item .p-4 {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
+    justify-content: space-between !important;
+}
+
+/* Đảm bảo nút "Thêm vào giỏ" luôn ở cuối */
+.fruite-item .btn {
+    margin-top: auto !important;
+}
+
+
+
+
+
+
+

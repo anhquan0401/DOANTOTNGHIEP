@@ -1,0 +1,355 @@
+﻿@model IEnumerable<WebApplication1.Data.Voucher>
+
+@{
+    ViewData["Title"] = "Danh sách Voucher";
+}
+
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --secondary-color: #64748b;
+        --success-color: #10b981;
+        --info-color: #3b82f6;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --bg-card: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 1. Nền và thiết lập chung */
+    body {
+        /* Sử dụng nền gradient nhạt hơn cho trang danh sách */
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
+
+    .list-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    /* 2. Header của trang (Chứa Tiêu đề và Nút Thêm) */
+    .page-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title h2 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.875rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        color: white;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+        }
+
+    .btn-secondary {
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+            border-color: var(--secondary-color);
+        }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-danger-outline {
+        background: #fff1f2;
+        color: var(--danger-color);
+        border: 2px solid #ffe4e6;
+    }
+
+        .btn-danger-outline:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+    /* 3. Lưới Voucher Card */
+    .voucher-grid {
+        display: grid;
+        /* Tạo lưới responsive: tự động xuống hàng, mỗi cột tối thiểu 380px */
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* 4. Thiết kế Thẻ Voucher */
+    .voucher-card {
+        background: var(--bg-card);
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .voucher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Thẻ bị vô hiệu hóa */
+        .voucher-card.expired {
+            opacity: 0.65;
+            background: #f8fafc;
+        }
+
+            .voucher-card.expired:hover {
+                transform: none;
+                box-shadow: var(--shadow);
+                opacity: 0.8;
+            }
+
+
+    .voucher-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+        .voucher-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            word-break: break-word;
+        }
+
+    .voucher-code {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 2px dashed var(--primary-color);
+        color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.125rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .voucher-body {
+        padding: 1.5rem;
+        flex-grow: 1; /* Giúp các thẻ trên cùng 1 hàng cao bằng nhau */
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .voucher-discount {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+        .voucher-discount .discount-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success-color);
+            line-height: 1;
+        }
+
+        .voucher-discount .discount-percent {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9375rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-row span:first-child {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .info-row span:last-child {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+    .voucher-description {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-style: italic;
+        background: var(--bg-light);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .voucher-footer {
+        padding: 1rem 1.5rem;
+        background: var(--bg-light);
+        border-top: 2px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .voucher-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: white;
+        float: right; /* Cho nó nổi bên phải */
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, var(--danger-color), #b91c1c);
+    }
+
+</style>
+
+<div class="list-container">
+    <div class="page-header">
+        <div class="page-title">
+            <h2>🏷️ Danh sách Voucher</h2>
+        </div>
+        <div class="action-buttons">
+            <a asp-area="Admin" asp-controller="VoucherAdmin" asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle" style="font-size: 1.125rem;"></i>
+                Thêm Voucher
+            </a>
+        </div>
+    </div>
+
+    <div class="voucher-grid">
+        @foreach (var item in Model)
+        {
+            var isExpired = !item.IsActive || item.ExpirationDate < DateTime.Now;
+            var cardClass = isExpired ? "expired" : "";
+
+            <div class="voucher-card @cardClass">
+                <div class="voucher-header">
+
+                    @if (isExpired)
+                    {
+                        <span class="badge-status badge-danger">Hết hạn</span>
+                    }
+                    else
+                    {
+                        <span class="badge-status badge-success">Còn hiệu lực</span>
+                    }
+
+                    <h3>@item.VoucherName</h3>
+                    <div class="voucher-code">@item.VoucherCode</div>
+                </div>
+
+                <div class="voucher-body">
+                    <div class="voucher-discount">
+                        <span class="discount-value">@item.DiscountVoucher</span>
+                        <span class="discount-percent">%</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Đơn tối thiểu:</span>
+                        <span>@(item.OrderMinimum.HasValue? item.OrderMinimum.Value.ToString("N0") + "đ" : "Không yêu cầu")</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Giới hạn / người:</span>
+                        <span>@(item.UserLimit.HasValue? item.UserLimit.ToString() : "Không giới hạn")</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Hết hạn ngày:</span>
+                        <span style="color: var(--danger-color);">@item.ExpirationDate.ToString("dd/MM/yyyy")</span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(item.Description))
+                    {
+                        <div class="voucher-description">
+                            @item.Description
+                        </div>
+                    }
+                </div>
+
+                <div class="voucher-footer">
+                    <small class="text-muted">Ngày tạo: @item.CreatedDate.ToString("dd/MM/yyyy")</small>
+                    <div class="voucher-actions">
+                        <a asp-area="Admin" asp-controller="VoucherAdmin" asp-action="Edit" asp-route-id="@item.VoucherId" class="btn btn-sm btn-secondary">
+                            Sửa
+                        </a>
+                        <a asp-area="Admin" asp-controller="VoucherAdmin" asp-action="Delete" asp-route-id="@item.VoucherId" class="btn btn-sm btn-danger-outline">
+                            Xóa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

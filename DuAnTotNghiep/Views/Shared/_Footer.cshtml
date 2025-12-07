@@ -1,0 +1,314 @@
+﻿@{
+    ViewData["Title"] = "_Footer";
+}
+
+<style>
+    /* 1. Định nghĩa biến màu sắc và Kiểu dáng chung */
+    :root {
+        --footer-bg: #111827; /* Màu than chì (Dark Charcoal) */
+        --footer-text: #9ca3af; /* Màu xám nhạt (Cool Gray) */
+        --footer-title: #ffffff;
+        --footer-border: #374151; /* Màu viền xám đậm */
+        --primary-color: #3b82f6; /* Màu xanh dương hiện đại */
+        --primary-hover: #2563eb;
+    }
+
+    /* 2. Hiệu ứng Fade-in cho toàn bộ Footer */
+    @@keyframes footerFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 3. Container Footer Chính */
+    .footer-modern {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--footer-bg);
+        color: var(--footer-text);
+        padding-top: 4rem;
+        /* Hiệu ứng đặc sắc: Glow viền trên */
+        border-top: 3px solid var(--footer-border);
+        box-shadow: 0 -10px 30px -10px rgba(59, 130, 246, 0.1); /* Ánh sáng xanh mờ */
+        animation: footerFadeIn 1s ease-out;
+    }
+
+    /* 4. Thanh Subscribe (Top Bar) */
+    .footer-top-bar {
+        border-bottom: 1px solid var(--footer-border);
+    }
+
+    .footer-logo h1 {
+        color: var(--footer-title);
+        font-weight: 700;
+        margin-bottom: 0;
+        transition: color 0.3s ease;
+    }
+
+    .footer-logo a:hover h1 {
+        color: var(--primary-color);
+    }
+
+    .subscribe-form .form-control {
+        background-color: #1f2937; /* Nền input đậm hơn */
+        border: 1px solid var(--footer-border);
+        color: white;
+        padding-top: 0.9rem;
+        padding-bottom: 0.9rem;
+    }
+
+        .subscribe-form .form-control::placeholder {
+            color: var(--footer-text);
+        }
+
+        .subscribe-form .form-control:focus {
+            background-color: #1f2937;
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+    .subscribe-btn {
+        background-color: var(--primary-color);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .subscribe-btn:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05); /* Hiệu ứng nhấn */
+        }
+
+    /* 5. Nút Social Media */
+    .footer-social .btn-social {
+        color: var(--footer-text);
+        border: 2px solid var(--footer-border);
+        width: 45px;
+        height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+        .footer-social .btn-social:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            /* Hiệu ứng đặc sắc: Xoay và Phóng to */
+            transform: scale(1.1) rotate(5deg);
+        }
+
+    /* 6. Nội dung 4 cột */
+    .footer-item h4 {
+        color: var(--footer-title);
+        font-weight: 600;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+        /* Dấu gạch chân cách điệu cho tiêu đề */
+        .footer-item h4::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+    .footer-item p {
+        line-height: 1.7;
+    }
+
+    .btn-read-more {
+        background: transparent;
+        border: 2px solid var(--footer-border);
+        color: var(--footer-title);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-read-more:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* 7. Hiệu ứng đặc sắc cho Links */
+    .footer-links .btn-link {
+        color: var(--footer-text);
+        text-decoration: none;
+        padding: 0.4rem 0;
+        display: block; /* Giúp link chiếm cả hàng */
+        transition: all 0.3s ease-out;
+    }
+        /* Thêm icon mũi tên › */
+        .footer-links .btn-link::before {
+            content: '›';
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-right: 8px;
+            transition: margin-right 0.3s ease-out;
+        }
+
+        .footer-links .btn-link:hover {
+            color: var(--footer-title);
+            /* Hiệu ứng đặc sắc: trượt sang phải */
+            transform: translateX(5px);
+        }
+
+            .footer-links .btn-link:hover::before {
+                margin-right: 12px;
+            }
+
+    /* 8. Cột Contact với Icons */
+    .footer-contact p {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .footer-contact i {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        margin-top: 5px;
+        width: 20px; /* Đảm bảo icon căn lề thẳng hàng */
+    }
+
+    .payment-img {
+        margin-top: 1rem;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+
+        .payment-img:hover {
+            opacity: 1;
+        }
+
+
+    /* 9. Thanh Copyright ở cuối */
+    .footer-copyright {
+        background-color: #000;
+        color: var(--footer-text);
+        padding: 1.5rem 0;
+        margin-top: 3rem;
+        font-size: 0.9rem;
+        border-top: 1px solid var(--footer-border);
+    }
+
+        .footer-copyright a {
+            color: var(--footer-title);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .footer-copyright a:hover {
+                color: var(--primary-color);
+            }
+
+</style>
+
+<div class="container-fluid footer-modern mt-5">
+    <div class="container py-5">
+        <div class="pb-4 mb-4 footer-top-bar">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-3">
+                    <a href="#" class="footer-logo text-decoration-none">
+                        <h1>E-QuanAT</h1>
+                    </a>
+                </div>
+                <div class="col-lg-6">
+                    <div class="position-relative mx-auto subscribe-form">
+                        <input class="form-control border-0 w-100 py-3 px-4 rounded-pill" type="email" placeholder="Nhập email của bạn để đăng ký">
+                        <button type="submit" class="btn border-0 border-secondary py-3 px-4 position-absolute rounded-pill top-0 end-0 subscribe-btn">Subscribe Now</button>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="d-flex justify-content-center justify-content-lg-end pt-3 pt-lg-0 footer-social">
+                        <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-secondary btn-md-square rounded-circle btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-item">
+                    <h4>Why People Like us!</h4>
+                    <p class="mb-4">
+                        typesetting, remaining essentially unchanged. It was
+                        popularised in the 1960s with the like Aldus PageMaker including of Lorem Ipsum.
+                    </p>
+                    <a href="" class="btn py-2 px-4 rounded-pill btn-read-more">Read More</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-item footer-links">
+                    <h4 class="text-light mb-3">Shop Info</h4>
+                    <a class="btn-link" href="">About Us</a>
+                    <a class="btn-link" href="">Contact Us</a>
+                    <a class="btn-link" href="">Privacy Policy</a>
+                    <a class="btn-link" href="">Terms & Condition</a>
+                    <a class="btn-link" href="">Return Policy</a>
+                    <a class="btn-link" href="">FAQs & Help</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-item footer-links">
+                    <h4 class="text-light mb-3">Account</h4>
+                    <a class="btn-link" href="">My Account</a>
+                    <a class="btn-link" href="">Shop details</a>
+                    <a class="btn-link" href="">Shopping Cart</a>
+                    <a class="btn-link" href="">Wishlist</a>
+                    <a class="btn-link" href="">Order History</a>
+                    <a class="btn-link" href="">International Orders</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-item footer-contact">
+                    <h4 class="text-light mb-3">Contact</h4>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i>
+                        1429 Netus Rd, NY 48247
+                    </p>
+                    <p>
+                        <i class="fas fa-envelope"></i>
+                        Example@gmail.com
+                    </p>
+                    <p>
+                        <i class="fas fa-phone"></i>
+                        +0123 4567 8910
+                    </p>
+                    <p>Payment Accepted</p>
+                    <img src="~/img/payment.png" class="img-fluid payment-img" alt="Payment Methods">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid footer-copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; @DateTime.Now.Year <a href="#">E-QuanAT</a>, All Right Reserved.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    Designed By <a href="httpsm.com/htmlcodex">HTML Codex</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

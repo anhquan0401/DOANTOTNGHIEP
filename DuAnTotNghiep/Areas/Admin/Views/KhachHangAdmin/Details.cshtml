@@ -1,0 +1,681 @@
+﻿@model WebApplication1.Data.KhachHang
+
+@{
+    ViewData["Title"] = "Chi tiết người dùng";
+}
+
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #06b6d4;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --bg-card: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
+
+    .details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .page-title h2 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.875rem;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+    }
+
+    .status-inactive {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        color: white;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--bg-light);
+        border-color: var(--text-muted);
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .profile-card {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .avatar-container {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        border: 5px solid white;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background: white;
+    }
+
+    .avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .profile-id {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--border-color);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .stat-item {
+        background: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .stat-label {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        margin: 0.25rem 0 0 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .info-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--bg-light), white);
+        border-bottom: 2px solid var(--border-color);
+        padding: 1.5rem 2rem;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+        flex: 1;
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .info-section:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        align-items: start;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .badge-gender-male {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .badge-gender-female {
+        background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+        color: #9f1239;
+    }
+
+    .badge-role {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        font-weight: 700;
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+    }
+
+    .security-box {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border-left: 4px solid var(--warning-color);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        word-break: break-all;
+    }
+
+    .security-label {
+        font-weight: 700;
+        color: #92400e;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .security-value {
+        color: #78350f;
+        font-size: 0.875rem;
+    }
+
+    .alert-box {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border-left: 4px solid var(--info-color);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        color: #1e40af;
+        line-height: 1.6;
+    }
+
+    
+</style>
+
+<div class="details-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>👤 Chi tiết người dùng</h2>
+            @if (Model.HieuLuc)
+            {
+                <span class="status-badge status-active">
+                    <span>✓</span> Đang hoạt động
+                </span>
+            }
+            else
+            {
+                <span class="status-badge status-inactive">
+                    <span>✗</span> Đã khóa
+                </span>
+            }
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Edit" asp-route-id="@Model.MaKh" class="btn btn-primary">
+                ✏️ Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                ← Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Profile Card -->
+        <div class="profile-card card">
+            <div class="profile-header">
+                <div class="avatar-container">
+                    @if (!string.IsNullOrEmpty(Model.Hinh))
+                    {
+                        <img src="~/Hinh/KhachHang/@Model.Hinh" alt="@Model.HoTen" />
+                    }
+                    else
+                    {
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: #cbd5e1;">
+                            👤
+                        </div>
+                    }
+                </div>
+                <h3 class="profile-name">@Model.HoTen</h3>
+                <p class="profile-id">Mã KH: #@Model.MaKh</p>
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <p class="stat-value">
+                        @if (Model.VaiTro == 0)
+                        {
+                            <text>👤</text>
+                        }
+                        else if (Model.VaiTro == 1)
+                        {
+                            <text>👔</text>
+                        }
+                        else
+                        {
+                            <text>👑</text>
+                        }
+                    </p>
+                    <p class="stat-label">Vai trò</p>
+                </div>
+                <div class="stat-item">
+                    <p class="stat-value">
+                        @if (Model.HieuLuc)
+                        {
+                            <text>✓</text>
+                        }
+                        else
+                        {
+                            <text>✗</text>
+                        }
+                    </p>
+                    <p class="stat-label">Trạng thái</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Card -->
+        <div class="info-card card">
+            <div class="card-header">
+                <h3>
+                    <span>ℹ️</span>
+                    Thông tin chi tiết
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- Personal Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <div class="section-icon">📝</div>
+                        <span>Thông tin cá nhân</span>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>👤</span> Họ và tên:
+                        </div>
+                        <div class="info-value" style="font-size: 1.125rem; font-weight: 700; color: var(--primary-color);">
+                            @Model.HoTen
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>⚧️</span> Giới tính:
+                        </div>
+                        <div class="info-value">
+                            @if (Model.GioiTinh)
+                            {
+                                <span class="badge badge-gender-male">
+                                    <span>♂️</span> Nam
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-gender-female">
+                                    <span>♀️</span> Nữ
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>🎂</span> Ngày sinh:
+                        </div>
+                        <div class="info-value">
+                            <span style="font-weight: 600;">@Model.NgaySinh.ToString("dd/MM/yyyy")</span>
+                                <span style="color: var(--text-muted); font-size: 0.875rem; margin-left: 0.5rem;">
+                                    (@((DateTime.Now.Year - Model.NgaySinh.Year)) tuổi)
+                                </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <div class="section-icon">📞</div>
+                        <span>Thông tin liên hệ</span>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>📧</span> Email:
+                        </div>
+                        <div class="info-value">
+                            <a href="mailto:@Model.Email" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                @Model.Email
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>📱</span> Điện thoại:
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.DienThoai))
+                            {
+                                <a href="tel:@Model.DienThoai" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">
+                                    @Model.DienThoai
+                                </a>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted);">Chưa cập nhật</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>📍</span> Địa chỉ:
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.DiaChi))
+                            {
+                                @Model.DiaChi
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted);">Chưa cập nhật</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <div class="section-icon">🔑</div>
+                        <span>Thông tin tài khoản</span>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>👑</span> Vai trò:
+                        </div>
+                        <div class="info-value">
+                            <span class="badge badge-role">
+                                @if (Model.VaiTro == 0)
+                                {
+                                    <span>👤</span> <text>Khách hàng</text>
+                                }
+                                else if (Model.VaiTro == 1)
+                                {
+                                    <span>👔</span> <text>Nhân viên</text>
+                                }
+                                else
+                                {
+                                    <span>👑</span> <text>Quản trị viên</text>
+                                }
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>✓</span> Trạng thái:
+                        </div>
+                        <div class="info-value">
+                            @if (Model.HieuLuc)
+                            {
+                                <span class="badge badge-success">
+                                    <span>✓</span> Đang hoạt động
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">
+                                    <span>✗</span> Đã khóa
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>🖼️</span> Hình đại diện:
+                        </div>
+                        <div class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.Hinh))
+                            {
+                                <span style="font-weight: 600;">@Model.Hinh</span>
+                            }
+                            else
+                            {
+                                <span style="color: var(--text-muted);">Chưa có</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <div class="section-icon">🔒</div>
+                        <span>Thông tin bảo mật</span>
+                    </div>
+
+                    <div class="alert-box">
+                        <div class="alert-icon">ℹ️</div>
+                        <div class="alert-content">
+                            <strong>Lưu ý:</strong> Các thông tin dưới đây chỉ dành cho quản trị viên. Không chia sẻ với bất kỳ ai.
+                        </div>
+                    </div>
+
+                    <div class="security-box">
+                        <div class="security-label">
+                            <span>🔐</span> Hash Mật khẩu:
+                        </div>
+                        <div class="security-value">
+                            @if (!string.IsNullOrEmpty(Model.HashMatKhau))
+                            {
+                                @Model.HashMatKhau
+                            }
+                            else
+                            {
+                                <span>Chưa thiết lập</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="security-box">
+                        <div class="security-label">
+                            <span>🔑</span> Random Key:
+                        </div>
+                        <div class="security-value">
+                            @if (!string.IsNullOrEmpty(Model.RandomKey))
+                            {
+                                @Model.RandomKey
+                            }
+                            else
+                            {
+                                <span>Chưa có</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

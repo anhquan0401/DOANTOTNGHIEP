@@ -1,0 +1,18 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    <div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown">@User.Identity.Name</a>
+        <div class="dropdown-menu m-0 bg-secondary rounded-0">
+            <a asp-action="proFile" asp-controller="ProfileUser" class="dropdown-item text-dark">Tài khoản của tôi</a>
+            <a asp-action="changePassword" asp-controller="ProfileUser" class="dropdown-item text-dark">Đổi mật khẩu</a>
+            <a asp-action="Index" asp-controller="HoaDon" class="dropdown-item text-dark">Đơn mua</a>
+            <a asp-action="DangXuat" asp-controller="KhachHang" class="dropdown-item text-dark">Đăng xuất</a>
+        </div>
+    </div>
+}
+else
+{
+    <a asp-action="DangNhap" asp-controller="KhachHang" class="my-auto text-dark">
+        <i class="fas fa-user fa-2x"></i>
+    </a>
+}

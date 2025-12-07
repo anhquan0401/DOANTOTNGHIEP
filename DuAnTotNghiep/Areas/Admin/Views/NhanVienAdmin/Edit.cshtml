@@ -1,0 +1,239 @@
+﻿@model WebApplication1.Areas.Admin.Models.NhanVienAdminVM
+
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin nhân viên";
+}
+
+<style>
+    /* Gradient Header cho Card */
+    .card-header-edit {
+        background: linear-gradient(to right, #667eea, #764ba2);
+        color: white;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+
+    /* Hiệu ứng cho Avatar */
+    .edit-avatar-box {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .edit-user-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid #f3f4f6;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+
+        .edit-user-img:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+    /* Form Styles */
+    .form-control {
+        height: 45px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            opacity: 1;
+            cursor: not-allowed;
+        }
+
+    .input-group-text {
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        color: #64748b;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .form-section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Custom Switch đẹp hơn */
+    .custom-switch .custom-control-label::before {
+        height: 1.5rem;
+        width: 2.75rem;
+        border-radius: 2rem;
+    }
+
+    .custom-switch .custom-control-label::after {
+        width: calc(1.5rem - 4px);
+        height: calc(1.5rem - 4px);
+        border-radius: 50%;
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(1.25rem);
+    }
+</style>
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="font-weight-bold text-dark">Chỉnh sửa nhân viên</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right bg-transparent p-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-muted">Danh sách</a></li>
+                    <li class="breadcrumb-item active text-primary">Cập nhật</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="edit-avatar-box">
+                        <img class="edit-user-img mb-3"
+                             src="https://ui-avatars.com/api/?name=@Model.HoTen&background=random&size=256&bold=true"
+                             alt="User profile picture">
+
+                        <h4 class="font-weight-bold text-dark">@Model.HoTen</h4>
+                        <p class="text-muted small mb-4">@Model.Email</p>
+
+                        <div class="form-group text-left">
+                            <label class="small font-weight-bold text-muted text-uppercase">Mã Nhân Viên (Không thể sửa)</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                </div>
+                                <input asp-for="MaNv" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3 small text-left border-0" style="background-color: #e0f2fe; color: #0369a1;">
+                            <i class="fas fa-info-circle mr-1"></i> Mã nhân viên là định danh duy nhất và không thể thay đổi sau khi tạo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-lg">
+                        <div class="card-header card-header-edit py-3">
+                            <h5 class="m-0 font-weight-bold"><i class="fas fa-user-edit mr-2"></i>Thông tin cập nhật</h5>
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <div class="form-section-title">Thông tin cơ bản</div>
+
+                            <div class="form-group">
+                                <label asp-for="HoTen" class="font-weight-bold small text-muted">Họ và tên <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-user text-primary"></i></span>
+                                    </div>
+                                    <input asp-for="HoTen" class="form-control" placeholder="Nhập họ tên..." />
+                                </div>
+                                <span asp-validation-for="HoTen" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Email" class="font-weight-bold small text-muted">Email liên hệ <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-envelope text-primary"></i></span>
+                                    </div>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email..." />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="form-section-title">Bảo mật & Quyền hạn</div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="MatKhau" class="font-weight-bold small text-muted">Mật khẩu mới</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-key text-warning"></i></span>
+                                            </div>
+                                            <input asp-for="MatKhau" type="password" class="form-control" placeholder="Để trống nếu không đổi..." />
+                                        </div>
+                                        <small class="form-text text-muted font-italic">Chỉ nhập nếu bạn muốn đổi mật khẩu.</small>
+                                        <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="MaPq" class="font-weight-bold small text-muted">Vai trò hệ thống</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-shield-alt text-success"></i></span>
+                                            </div>
+                                            <select asp-for="MaPq" class="form-control">
+                                                <option value="2">Nhân viên thường</option>
+                                                <option value="1">Quản trị viên (Admin)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group bg-light p-3 rounded mt-2 border d-flex justify-content-between align-items-center">
+                                <div>
+                                    <label class="font-weight-bold text-dark m-0">Trạng thái hoạt động</label>
+                                    <div class="small text-muted">Tắt để vô hiệu hóa tài khoản này</div>
+                                </div>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" asp-for="XacNhan" id="customSwitchEdit">
+                                    <label class="custom-control-label" for="customSwitchEdit"></label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer bg-white d-flex justify-content-end py-3">
+                            <a asp-action="Index" class="btn btn-light border mr-2 px-4 rounded-pill">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm" style="background: linear-gradient(to right, #667eea, #764ba2); border:none;">
+                                <i class="fas fa-save mr-2"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

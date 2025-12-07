@@ -1,0 +1,412 @@
+﻿@model WebApplication1.ViewModels.RegisterVM
+@{
+    ViewData["Title"] = "Đăng Ký";
+}
+
+<style>
+    :root {
+        --primary-color: #007bff; /* Màu xanh dương chủ đạo */
+        --primary-hover: #0056b3;
+        --secondary-color: #6c757d;
+        --border-color: #e0e0e0;
+        --bg-light: #f8f9fa;
+        --text-dark: #212529;
+        --text-muted: #6c757d;
+        --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    /* 1. Nền trang và Container chính */
+    .register-page-wrapper {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+    }
+
+    /* 2. Thẻ Đăng ký chính */
+    .register-card {
+        display: grid;
+        grid-template-columns: 40% 60%; /* Chia 2 cột: 40% cho branding, 60% cho form */
+        max-width: 1100px; /* Rộng hơn thẻ login để chứa form 2 cột */
+        width: 100%;
+        background: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .register-card:hover {
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2);
+        }
+
+    /* 3. Panel Branding (Bên trái) */
+    .register-branding-panel {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        color: white;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+        .register-branding-panel .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite; /* Hiệu ứng khác cho sống động */
+        }
+
+        .register-branding-panel h2 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-branding-panel p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+    /* Hiệu ứng pulse */
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+
+    /* 4. Panel Form (Bên phải) */
+    .register-form-panel {
+        padding: 3rem;
+        overflow-y: auto; /* Cho phép cuộn nếu form quá dài trên màn hình nhỏ */
+    }
+
+        .register-form-panel h3 {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-form-panel .preamble {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+            .register-form-panel .preamble a {
+                color: var(--primary-color);
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .register-form-panel .preamble a:hover {
+                    text-decoration: underline;
+                }
+
+    /* 5. Lưới Form - Quan trọng! */
+    .register-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Chia form thành 2 cột bằng nhau */
+        gap: 0 1.5rem; /* Khoảng cách giữa các cột, không có khoảng cách hàng (để form-group xử lý) */
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+    /* Helper class để 1 trường thông tin chiếm 2 cột */
+    .grid-span-2 {
+        grid-column: span 2;
+    }
+
+
+    /* 6. Định dạng Form Controls */
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+
+    /* Lỗi validation */
+    .text-danger {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .validation-summary-errors {
+        background: #fff1f2;
+        color: #ef4444;
+        border: 1px solid #ffe4e6;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+    /* 7. Style riêng cho Radio và File Input */
+
+    /* Giới tính - Radio buttons */
+    .form-group-radio label {
+        margin-bottom: 0.75rem;
+    }
+
+    .radio-options {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .radio-option input[type="radio"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+            .radio-option input[type="radio"]:checked {
+                border-color: var(--primary-color);
+                background: var(--primary-color);
+                border-width: 3px;
+                box-shadow: 0 0 0 3px white inset;
+            }
+
+        .radio-option label {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+    /* Upload file */
+    .form-group-file {
+        position: relative;
+    }
+
+    .file-input {
+        width: 100%;
+        height: 100%;
+        opacity: 0; /* Ẩn input thật */
+        position: absolute;
+        cursor: pointer;
+    }
+
+    .file-label {
+        border: 2px dashed var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-input:hover + .file-label,
+    .file-input:focus + .file-label {
+        border-color: var(--primary-color);
+        background: #f4f7ff;
+    }
+
+    .file-label span {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .file-label #file-name-preview {
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+
+    /* 8. Nút Đăng ký */
+    .btn-register {
+        width: 100%;
+        padding: 0.875rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        margin-top: 1rem;
+    }
+
+        .btn-register:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+
+    /* 9. Responsive */
+    @@media (max-width: 992px) {
+        .register-card {
+            grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+            margin-top: 2rem;
+        }
+
+        .register-branding-panel {
+            display: none; /* Ẩn panel branding trên di động */
+        }
+
+        .register-form-panel {
+            padding: 2rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .register-form-grid {
+            grid-template-columns: 1fr; /* Chuyển form thành 1 cột trên di động */
+            gap: 0;
+        }
+        /* Bỏ class grid-span-2 trên di động */
+        .grid-span-2 {
+            grid-column: span 1;
+        }
+    }
+</style>
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Đăng Ký</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Register</li>
+    </ol>
+</div>
+<div class="register-page-wrapper">
+    <div class="register-card">
+        <div class="register-branding-panel">
+            <div class="icon">🚀</div>
+            <h2>Tạo tài khoản mới</h2>
+            <p>Tham gia cùng chúng tôi ngay hôm nay để nhận hàng ngàn ưu đãi hấp dẫn!</p>
+        </div>
+
+        <div class="register-form-panel">
+            <h3>Thông Tin Đăng Ký</h3>
+            <div class="preamble">
+                Đã có tài khoản?
+                <a asp-action="DangNhap" asp-controller="KhachHang">
+                    Đăng nhập tại đây
+                </a>
+            </div>
+
+            <form asp-action="DangKy" asp-controller="KhachHang" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary-errors"></div>
+
+                <div class="register-form-grid">
+                    <div class="form-group">
+                        <label asp-for="HoTen">Họ và tên <sup>*</sup></label>
+                        <input asp-for="HoTen" type="text" class="form-control" placeholder="vd: Nguyễn Văn A">
+                        <span class="text-danger" asp-validation-for="HoTen"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MatKhau">Mật khẩu <sup>*</sup></label>
+                        <input asp-for="MatKhau" type="password" class="form-control" placeholder="••••••••">
+                        <span class="text-danger" asp-validation-for="MatKhau"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email">Email <sup>*</sup></label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="vd: example@mail.com">
+                        <span class="text-danger" asp-validation-for="Email"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DienThoai">Số điện thoại <sup>*</sup></label>
+                        <input asp-for="DienThoai" type="tel" class="form-control" placeholder="vd: 090xxxxxxx">
+                        <span class="text-danger" asp-validation-for="DienThoai"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="NgaySinh">Ngày sinh</label>
+                        <input asp-for="NgaySinh" type="date" class="form-control">
+                    </div>
+
+                    <div class="form-group grid-span-2">
+                        <label asp-for="DiaChi">Địa chỉ</label>
+                        <input asp-for="DiaChi" type="text" class="form-control" placeholder="vd: 123 Đường ABC, Phường X, Quận Y...">
+                        <span class="text-danger" asp-validation-for="DiaChi"></span>
+                    </div>
+
+                    <div class="form-group grid-span-2 form-group-radio">
+                        <label>Giới tính</label>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" asp-for="GioiTinh" value="true" id="gender-male" checked />
+                                <label for="gender-male">Nam</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" asp-for="GioiTinh" value="false" id="gender-female" />
+                                <label for="gender-female">Nữ</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group grid-span-2 form-group-file">
+                        <label aspF-for="Hinh" style="margin-bottom: 0.5rem;">Ảnh đại diện</label>
+                        <input asp-for="Hinh" type="file" class="file-input" onchange="document.getElementById('file-name-preview').textContent = this.files.length > 0 ? this.files[0].name : 'Chưa chọn tệp...'">
+                        <label class="file-label" for="Hinh">
+                            <span>Nhấn để chọn ảnh</span>
+                            <div id="file-name-preview">Chưa chọn tệp...</div>
+                        </label>
+                    </div>
+
+                </div> <div class="form-actions grid-span-2">
+                    <button type="submit" class="btn-register">Tạo tài khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

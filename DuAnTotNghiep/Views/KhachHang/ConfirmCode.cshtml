@@ -1,0 +1,228 @@
+﻿@model WebApplication1.ViewModels.ConfirmCodeVM
+@{
+    ViewData["Title"] = "Xác nhận mã";
+}
+
+<style>
+    :root {
+        --primary-color: #007bff; /* Màu xanh dương chủ đạo */
+        --primary-hover: #0056b3;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --border-color: #e0e0e0;
+        --bg-light: #f8f9fa;
+        --text-dark: #212529;
+        --text-muted: #6c757d;
+        --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    }
+
+    /* 1. Nền trang và Container chính */
+    .confirm-code-wrapper {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        min-height: 70vh; /* Chiều cao tối thiểu */
+    }
+
+    /* 2. Thẻ (Card) chính */
+    .confirm-code-card {
+        background: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        padding: 3rem;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+        .confirm-code-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2);
+        }
+
+    /* Hiệu ứng Fade In */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* 3. Nội dung bên trong Card */
+    .card-icon {
+        font-size: 3.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .card-title {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-description {
+        font-size: 1rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    /* 4. Form */
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left; /* Căn trái label và input */
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+
+    .text-danger {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* 5. Nút Submit */
+    .btn-submit {
+        width: 100%;
+        padding: 0.875rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+
+    /* 6. Link Quay lại */
+    .back-to-login {
+        margin-top: 2rem;
+        font-size: 0.9375rem;
+    }
+
+        .back-to-login a {
+            color: var(--secondary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .back-to-login a:hover {
+                color: var(--primary-color);
+                text-decoration: underline;
+            }
+
+    /* 7. Thông báo (ViewBag.Message / Lỗi) */
+    .form-message {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+        .form-message.success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .form-message.error {
+            background: #fff1f2;
+            color: var(--danger-color);
+            border: 1px solid #ffe4e6;
+        }
+</style>
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Xác nhận mã</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Xác nhận mã</li>
+    </ol>
+</div>
+<div class="confirm-code-wrapper">
+    <div class="confirm-code-card">
+        <div class="card-icon">🛡️</div>
+        <h3 class="card-title">Đặt Lại Mật Khẩu</h3>
+        <p class="card-description">
+            Nhập mã xác nhận từ email và mật khẩu mới của bạn.
+        </p>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="form-message success">
+                @ViewBag.Message
+            </div>
+        }
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="form-message error">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+
+        <form asp-action="ConfirmCode" asp-controller="KhachHang">
+            <div asp-validation-summary="ModelOnly" class="form-message error"></div>
+
+            <div class="form-group">
+                <label asp-for="@Model.Code">Mã xác nhận <sup>*</sup></label>
+                <input asp-for="@Model.Code" type="text" class="form-control" placeholder="Nhập 6 số..." autocomplete="off">
+                <span class="text-danger" asp-validation-for="@Model.Code"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="@Model.NewPassWord">Mật khẩu mới <sup>*</sup></label>
+                <input asp-for="@Model.NewPassWord" type="password" class="form-control" placeholder="••••••••">
+                <span class="text-danger" asp-validation-for="@Model.NewPassWord"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Xác nhận & Đổi mật khẩu" class="btn-submit" />
+            </div>
+        </form>
+
+        <div class="back-to-login">
+            <a asp-action="forgotPassword" asp-controller="KhachHang">
+                Không nhận được mã? Gửi lại.
+            </a>
+        </div>
+    </div>
+</div>

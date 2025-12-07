@@ -1,0 +1,195 @@
+﻿@model IEnumerable<WebApplication1.Areas.Admin.Models.HangHoaAdminVM>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    var totalPages = ViewBag.TotalPages;
+    var currentPages = ViewBag.CurrentPage;
+    var loais = ViewBag.Loais;
+    var tongNew = ViewBag.Total;
+    var Today = DateTime.Today;
+}
+
+<!-- Link Bootstrap Icons nếu chưa có -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-gradient rounded-4 p-3 shadow-sm"
+         style="background: linear-gradient(90deg, #00b4d8, #0077b6); color: white;">
+        <h2 class="fw-bold mb-0 d-flex align-items-center">
+            <i class="bi bi-box-seam-fill me-2 fs-3"></i> Danh sách sản phẩm
+        </h2>
+        <a asp-action="Create" class="btn btn-light rounded-pill px-4 shadow-sm fw-semibold">
+            <i class="bi bi-plus-circle me-1 text-primary"></i> Thêm mới
+        </a>
+    </div>
+
+    <!-- Tổng quan -->
+    <div class="alert alert-light border-start border-5 border-primary shadow-sm rounded-4 py-3 px-4 mb-4">
+        <i class="bi bi-graph-up-arrow text-primary me-2 fs-5"></i>
+        <strong>Tổng sản phẩm:</strong> <span class="text-primary fw-semibold">@tongNew</span>
+        <span class="ms-3 text-muted">| Ngày hôm nay: <strong>@Today.ToString("dd/MM/yyyy")</strong></span>
+    </div>
+
+    <!-- Bảng sản phẩm -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 table-hover text-center">
+                <thead class="text-white text-uppercase small" style="background: linear-gradient(90deg, #0096c7, #00b4d8);">
+                    <tr>
+                        <th>Tên hàng hóa</th>
+                        <th>Số lượng</th>
+                        <th>Alias</th>
+                        <th>Đơn vị</th>
+                        <th>Đơn giá</th>
+                        <th>Hình ảnh</th>
+                        <th>Ngày SX</th>
+                        <th>Giảm giá</th>
+                        <th>Lượt xem</th>
+                        <th style="width:180px;">Mô tả</th>
+                        <th>Loại</th>
+                        <th>Nhà CC</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="align-middle table-row-hover">
+                            <td class="fw-semibold">@item.TenHH</td>
+                            <td>@item.SoLuong</td>
+                            <td>@item.TenAlias</td>
+                            <td>@item.MoTaDonVi</td>
+                            <td class="text-success fw-bold">@string.Format("{0:N0} ₫", item.DonGia)</td>
+                            <td>
+                                <div class="image-container">
+                                    <img src="~/Hinh/HangHoa/@item.HinhFile"
+                                         alt="@item.TenHH"
+                                         class="img-fluid rounded-3 shadow-sm">
+                                </div>
+                            </td>
+                            <td>@item.NgaySx?.ToString("dd/MM/yyyy")</td>
+                            <td><span class="badge bg-danger-subtle text-danger">@item.GiamGia %</span></td>
+                            <td><span class="badge bg-warning-subtle text-dark">@item.SoLanXem</span></td>
+                            <td class="text-truncate" style="max-width: 180px;">@item.MoTa</td>
+                            <td><span class="badge bg-info-subtle text-info">@item.MaLoai</span></td>
+                            <td><span class="badge bg-secondary">@item.MaNcc</span></td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.MaHH"
+                                       class="btn btn-outline-primary rounded-circle shadow-sm"
+                                       title="Sửa">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.MaHH"
+                                       class="btn btn-outline-success rounded-circle shadow-sm"
+                                       title="Chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.MaHH"
+                                       class="btn btn-outline-danger rounded-circle shadow-sm"
+                                       title="Xóa"
+                                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination pagination-rounded shadow-sm">
+                <li class="page-item @(currentPages == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { loai = loais, page = currentPages - 1 })">&laquo;</a>
+                </li>
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPages ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { loai = loais, page = i })">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(currentPages == totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { loai = loais, page = currentPages + 1 })">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- CSS tùy chỉnh -->
+<style>
+    /* Nút gradient đẹp */
+    .btn-gradient {
+        background: linear-gradient(90deg, #0dcaf0, #0d6efd);
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+        .btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+
+    /* Hình sản phẩm */
+    .image-container {
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+            .image-container img:hover {
+                transform: scale(1.1);
+            }
+
+    /* Hover bảng */
+    .table-row-hover:hover {
+        background-color: #f0f9ff !important;
+        transition: 0.2s;
+    }
+
+    /* Badge màu nhẹ */
+    .bg-info-subtle {
+        background-color: #dff6ff;
+        color: #0077b6;
+    }
+
+    .bg-danger-subtle {
+        background-color: #ffe5e5;
+        color: #c1121f;
+    }
+
+    .bg-warning-subtle {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        border-radius: 50% !important;
+        margin: 0 4px;
+        color: #0d6efd;
+    }
+
+    .pagination .active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: #fff;
+    }
+</style>

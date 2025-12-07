@@ -1,0 +1,110 @@
+﻿<a asp-action="Recommend" asp-controller="Home" class="brand-link text-decoration-none">
+    <div class="logo-wrapper">
+        <h1 class="main-logo-text">
+            <span class="letter-e">E</span><span class="hyphen">-</span>Commerce
+        </h1>
+
+        <div class="sub-logo-text">
+            SURLNAME FREES
+        </div>
+    </div>
+</a>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* 1. Cấu trúc chung */
+    .brand-link {
+        display: inline-block;
+        background-color: #fff; /* Nền trắng */
+        padding: 10px 20px;
+        border-radius: 8px; /* Bo nhẹ góc nền */
+        transition: transform 0.3s ease;
+    }
+
+    .logo-wrapper {
+        display: flex;
+        flex-direction: column; /* Xếp chồng dòng trên dưới */
+        align-items: center; /* Căn giữa */
+        font-family: 'Poppins', sans-serif; /* Font chữ hiện đại */
+        line-height: 1;
+    }
+
+    /* 2. Style cho dòng chữ to "E-Commerce" */
+    .main-logo-text {
+        font-size: 2.5rem; /* Kích thước chữ to */
+        font-weight: 800; /* Chữ rất đậm */
+        color: #192f4d; /* Màu xanh than đậm (Dark Navy) giống ảnh */
+        margin: 0;
+        letter-spacing: -1px; /* Thu hẹp khoảng cách chữ */
+    }
+
+    /* Chữ "E" màu cam gradient */
+    .letter-e {
+        background: linear-gradient(135deg, #ff8c00, #ff4500); /* Cam chuyển sang đỏ cam */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block; /* Để áp dụng được transform */
+    }
+
+    /* Dấu gạch ngang màu cam */
+    .hyphen {
+        color: #ff6b00;
+        margin-right: 2px;
+    }
+
+    /* 3. Style cho dòng phụ "SURLNAME FREES" */
+    .sub-logo-text {
+        font-size: 0.75rem; /* Chữ nhỏ */
+        text-transform: uppercase; /* Viết hoa toàn bộ */
+        letter-spacing: 2px; /* Giãn cách chữ rộng ra */
+        color: #555; /* Màu xám */
+        width: 100%; /* Chiếm hết chiều ngang để kẻ dòng */
+        display: flex; /* Dùng flex để căn dòng kẻ */
+        align-items: center;
+        justify-content: center;
+        margin-top: 5px;
+        font-weight: 500;
+        white-space: nowrap; /* Không xuống dòng */
+    }
+
+        /* Tạo 2 đường gạch ngang 2 bên chữ nhỏ */
+        .sub-logo-text::before,
+        .sub-logo-text::after {
+            content: "";
+            flex: 1; /* Tự động kéo dài lấp đầy khoảng trống */
+            height: 1px; /* Độ dày đường kẻ */
+            background-color: #192f4d; /* Màu đường kẻ (Xanh than) */
+            opacity: 0.5; /* Làm mờ đường kẻ chút cho tinh tế */
+        }
+
+        .sub-logo-text::before {
+            margin-right: 10px; /* Cách chữ bên trái */
+        }
+
+        .sub-logo-text::after {
+            margin-left: 10px; /* Cách chữ bên phải */
+        }
+
+    /* --- HIỆU ỨNG HOVER (Khi di chuột vào) --- */
+
+    /* 1. Logo nảy lên nhẹ */
+    .brand-link:hover {
+        transform: translateY(-3px);
+    }
+
+        /* 2. Chữ E sáng lên và xoay nhẹ */
+        .brand-link:hover .letter-e {
+            filter: brightness(1.2);
+            transform: rotate(-5deg); /* Nghiêng chữ E chút xíu cho vui mắt */
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* 3. Hai đường kẻ 2 bên giãn ra */
+        .brand-link:hover .sub-logo-text::before,
+        .brand-link:hover .sub-logo-text::after {
+            width: 100%;
+            background-color: #ff6b00; /* Đường kẻ đổi sang màu cam */
+            transition: background-color 0.3s ease;
+        }
+</style>

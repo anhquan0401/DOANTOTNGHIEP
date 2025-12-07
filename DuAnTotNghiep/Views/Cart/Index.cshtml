@@ -1,0 +1,466 @@
+﻿@model IEnumerable<WebApplication1.ViewModels.CartVM>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var successMessage = TempData["SuccessMessage"] as string;
+    var errorMessage = ViewBag.ErrorMessage as string;
+
+    // Tính toán tổng tiền ở đây để dùng cho cả 2 nơi (summary & empty cart check)
+    var subtotal = Model.Sum(p => p.ThanhTien);
+    var subtotalFormatted = subtotal.ToString("#,##").Replace(',', '.');
+}
+
+<style>
+    /* 1. Biến màu sắc và Kiểu dáng chung */
+    :root {
+        --primary-color: #10b981; /* Màu xanh lá cây (Success) */
+        --primary-hover: #0f9b6c;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.07);
+        --shadow-lifted: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 2. Nền trang và Layout 2 cột */
+    .cart-page-container {
+        background-color: var(--bg-light);
+    }
+
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr; /* Mặc định 1 cột trên mobile */
+        gap: 2rem;
+    }
+
+    /* 3. Danh sách sản phẩm (Cột trái) */
+    .cart-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .cart-item-card {
+        display: grid;
+        /* [Image] [Details] [Quantity] [Total] [Remove] */
+        grid-template-columns: 80px 1.5fr 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-soft);
+        transition: all 0.3s ease-out;
+    }
+
+        .cart-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lifted);
+        }
+
+    .item-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 0.75rem; /* Bo góc vuông mượt */
+        border: 1px solid var(--border-color);
+    }
+
+    .item-details a {
+        text-decoration: none;
+    }
+
+    .item-details .item-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        display: block; /* Cho tên sản phẩm 1 dòng riêng */
+        transition: color 0.2s ease;
+    }
+
+    .item-details a:hover .item-name {
+        color: var(--primary-color);
+    }
+
+    .item-details .item-price {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* 4. Ô Số Lượng (Copy từ code của bạn) */
+    /* Làm cho nó đẹp hơn */
+    .item-quantity .input-group {
+        width: 120px; /* Tăng độ rộng */
+        background: var(--bg-light);
+        border-radius: 2rem;
+        padding: 0.25rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .item-quantity .form-control {
+        background: transparent !important;
+        font-weight: 700;
+    }
+
+    .item-quantity .btn {
+        background: white;
+        border-color: var(--border-color);
+        transition: all 0.2s ease;
+    }
+
+        .item-quantity .btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+    .item-total .total-price {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+
+    /* 5. Nút Xóa (Remove) */
+    .item-remove .btn-remove {
+        background: #fff1f2; /* Nền đỏ nhạt */
+        color: var(--danger-color);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ffe4e6;
+        transition: all 0.2s ease;
+    }
+
+        .item-remove .btn-remove:hover {
+            background: var(--danger-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+
+    /* 6. Tóm tắt đơn hàng (Cột phải) */
+    .cart-summary-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-soft);
+        padding: 1.5rem;
+        /* Hiệu ứng Sticky - Cực kỳ quan trọng */
+        position: sticky;
+        top: 2rem;
+    }
+
+    .summary-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+        .summary-row .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .summary-row .value {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+    .summary-divider {
+        border-top: 2px dashed var(--border-color);
+        margin: 1.5rem 0;
+    }
+
+    .summary-total {
+        font-size: 1.25rem;
+    }
+
+        .summary-total .label {
+            font-weight: 700;
+        }
+
+        .summary-total .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+    .btn-checkout {
+        display: block;
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+    /* 7. Trạng thái Giỏ Hàng Trống */
+    .empty-cart-container {
+        background: #ffffff;
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+        text-align: center;
+        border: 2px dashed var(--border-color);
+    }
+
+    .empty-cart-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        animation: bounce 1.5s infinite;
+    }
+
+    .empty-cart-container h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+
+    .empty-cart-container p {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    .btn-continue-shopping {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-continue-shopping:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-20px);
+        }
+
+        60% {
+            transform: translateY(-10px);
+        }
+    }
+
+
+    /* 8. Responsive */
+    @@media (min-width: 992px) {
+        .cart-layout {
+            grid-template-columns: 2fr 1fr; /* 2 cột trên desktop */
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .cart-item-card {
+            /* Chuyển thành bố cục 2x3 trên mobile */
+            grid-template-columns: 80px 1fr;
+            grid-template-rows: auto auto auto;
+            padding: 1rem;
+            gap: 0.5rem 1rem;
+        }
+
+        .item-image {
+            grid-row: 1 / span 3; /* Ảnh chiếm 3 hàng */
+        }
+
+        .item-details {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .item-quantity {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .item-total {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .item-remove {
+            grid-column: 2;
+            grid-row: 1;
+            justify-self: end; /* Đẩy nút xóa sang phải cùng hàng với tên */
+        }
+
+        .item-total .total-price {
+            text-align: right;
+        }
+    }
+</style>
+
+<div class="container-fluid page-header py-5" style="background: url('../img/b1.jpg') !important;">
+    <h1 class="text-center text-white display-6">Giỏ Hàng</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Cart</li>
+    </ol>
+</div>
+<div class="container-fluid py-5 cart-page-container">
+    <div class="container py-5">
+
+        @if (User.Identity.IsAuthenticated && Model.Any())
+        {
+            <div class="cart-layout">
+
+                <div class="cart-items-list">
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item-card">
+                            <div class="item-image">
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH">
+                                    <img src="~/Hinh/HangHoa/@item.Img" class="img-fluid" alt="@item.TenHH">
+                                </a>
+                            </div>
+                            <div class="item-details">
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH">
+                                    <span class="item-name">@item.TenHH</span>
+                                </a>
+                                <span class="item-price">@string.Format("{0:N0} ₫", item.DonGia)</span>
+                            </div>
+                            <div class="item-quantity">
+                                <form asp-action="UpdateCart" asp-controller="Cart" asp-route-id="@item.MaHH" method="post">
+                                    <div class="input-group quantity" style="width: 120px;">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-sm btn-minus rounded-circle bg-light border" type="submit">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control form-control-sm text-center border-0" value="@item.Soluong" name="quantity">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-sm btn-plus rounded-circle bg-light border" type="submit">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="item-total">
+                                <span class="total-price">@string.Format("{0:N0} ₫", item.ThanhTien)</span>
+                            </div>
+                            <div class="item-remove">
+                                <a asp-action="Remove" asp-controller="Cart" asp-route-id="@item.MaHH" class="btn btn-remove" title="Xóa sản phẩm">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="cart-summary">
+                    <div class="cart-summary-card">
+                        <h3 class="summary-title">Tóm Tắt Đơn Hàng</h3>
+
+                        <div class="summary-row">
+                            <span class="label">Tạm tính:</span>
+                            <span class="value">@subtotalFormatted đ</span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="label">Phí vận chuyển:</span>
+                            <span class="value">0$</span>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-row summary-total">
+                            <span class="label">Tổng cộng:</span>
+                            <span class="value">@subtotalFormatted đ</span>
+                        </div>
+
+                        <a asp-action="Checkout" asp-controller="Cart" class="btn-checkout">
+                            Tiến hành thanh toán
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-cart-container">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>Giỏ hàng của bạn đang trống</h3>
+                <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm nhé!</p>
+                <a asp-action="Index" asp-controller="Shop" class="btn-continue-shopping">
+                    Tiếp tục mua sắm
+                </a>
+            </div>
+        }
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Kiểm tra nếu có thông báo thành công từ TempData
+            var successMessage = '@successMessage';
+            if (successMessage) {
+                toastr.success(successMessage); // Hiển thị thông báo thành công
+            }
+
+            // Kiểm tra nếu có thông báo lỗi từ ViewBag
+            var errorMessage = '@errorMessage';
+            if (errorMessage) {
+                toastr.error(errorMessage); // Hiển thị thông báo lỗi
+            }
+        });
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right", // Vị trí thông báo
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300", // Thời gian hiển thị
+            "hideDuration": "1000",
+            "timeOut": "5000", // Thời gian ẩn
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "toastClass": "toast-custom" // Thêm class tùy chỉnh để dễ dàng điều chỉnh CSS
+        };
+    </script>
+}

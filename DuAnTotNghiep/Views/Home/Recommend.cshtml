@@ -1,0 +1,356 @@
+﻿@model IEnumerable<WebApplication1.ViewModels.RecommendProduct>
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_LayoutCustomer";
+    var totalPages = ViewBag.TotalPages;
+    var currentPages = ViewBag.CurrentPage;
+    var loais = ViewBag.Loais;
+}
+
+<style>
+    /* 1. Định nghĩa biến màu sắc và Kiểu dáng chung */
+    :root {
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --bg-light-gray: #f8fafc;
+        --border-color: #e2e8f0;
+        --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.07);
+        --shadow-lifted: 0 10px 25px rgba(0, 0, 0, 0.1);
+        /* Màu Gradient cho từng Icon */
+        --grad-shipping: linear-gradient(135deg, #10b981, #14b8a6); /* Green-Teal */
+        --grad-security: linear-gradient(135deg, #3b82f6, #2563eb); /* Blue */
+        --grad-return: linear-gradient(135deg, #f59e0b, #d97706); /* Orange-Amber */
+        --grad-support: linear-gradient(135deg, #8b5cf6, #6d28d9); /* Purple-Violet */
+    }
+
+    /* 2. Nền Toàn Section */
+    .featurs.py-5 {
+        background-color: var(--bg-light-gray);
+    }
+
+    /* 3. Thẻ Tính Năng (Features Item) */
+
+    /* Áp dụng cho cả <a> và <div> là cột */
+    .featurs .col-md-6 {
+        text-decoration: none; /* Loại bỏ gạch chân của thẻ <a> */
+    }
+
+    .featurs-item {
+        background: #ffffff;
+        border-radius: 1rem; /* Bo góc mượt hơn */
+        padding: 2.5rem 1.5rem;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-soft);
+        /* Hiệu ứng chuyển động */
+        transition: all 0.3s ease-out;
+    }
+
+        /* 4. Hiệu ứng Hover "Nâng Lên" */
+        .featurs-item:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lifted);
+        }
+
+    /* 5. Thiết kế lại Icon */
+    .featurs-icon {
+        /* Bỏ class .btn-square, .bg-secondary */
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex; /* Căn giữa icon hoàn hảo */
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem; /* Giảm margin-bottom */
+        color: white;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        /* Hiệu ứng chuyển động cho icon */
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
+    }
+
+    /* Hiệu ứng Hover cho Icon (khi hover cả thẻ) */
+    .featurs-item:hover .featurs-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* 6. Áp dụng màu Gradient cho từng Icon */
+    .featurs-icon.icon-shipping {
+        background: var(--grad-shipping);
+    }
+
+    .featurs-icon.icon-security {
+        background: var(--grad-security);
+    }
+
+    .featurs-icon.icon-return {
+        background: var(--grad-return);
+    }
+
+    .featurs-icon.icon-support {
+        background: var(--grad-support);
+    }
+
+    /* Giảm kích thước icon 1 chút để vừa vặn hơn */
+    .featurs-icon .fas,
+    .featurs-icon .fa {
+        font-size: 2.5rem; /* 3x hơi lớn, 2.5rem là vừa đẹp */
+    }
+
+    /* 7. Nội dung Text */
+    .featurs-content h5 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .featurs-content p {
+        color: var(--text-muted);
+        margin-bottom: 0;
+    }
+</style>
+
+<!-- Hero Start -->
+<div class="container-fluid py-5 mb-5 hero-header" style="background: url('../img/AnhNen.jpg') !important; ">
+    <div class="container py-5">
+        <div class="row g-5 align-items-center">
+            <div class="col-md-12 col-lg-7">
+                <h4 class="mb-3 text-secondary">100% Sản phẩm chính hãng</h4>
+                <h1 class="mb-5 display-3 text-white">Những ưu đãi không đợi chờ! Mua sắm ngay hôm nay!</h1>
+                <div class="position-relative mx-auto">
+                    <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Search">
+                    <button type="submit" class="btn border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style="top: 0; right: 25%; background: #000000">Submit Now</button>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-5">
+                <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
+                    <div class="carousel-inner" role="listbox">
+                        <div class="carousel-item active rounded">
+                            <img src="img/DongHo.jpg" class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
+                            <a href="#" class="btn px-4 py-2 text-white rounded">Đồng hồ</a>
+                        </div>
+                        <div class="carousel-item rounded">
+                            <img src="img/LapTop.webp" class="img-fluid w-100 h-100 rounded" alt="Second slide">
+                            <a href="#" class="btn px-4 py-2 text-white rounded">Laptop</a>
+                        </div>
+                        <div class="carousel-item rounded">
+                            <img src="img/AoQuan.jpg" class="img-fluid w-100 h-100 rounded" alt="Second slide">
+                            <a href="#" class="btn px-4 py-2 text-white rounded">Áo Quần</a>
+                        </div>
+                        <div class="carousel-item rounded">
+                            <img src="img/IP15.webp" class="img-fluid w-100 h-100 rounded" alt="Second slide">
+                            <a href="#" class="btn px-4 py-2 text-white rounded">Iphone</a>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<!-- Featurs Section Start -->
+<div class="container-fluid featurs py-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            <a asp-controller="Voucher" asp-action="Index" class="col-md-6 col-lg-3">
+                <div class="featurs-item text-center rounded p-4">
+                    <div class="featurs-icon rounded-circle mx-auto icon-shipping">
+                        <i class="fas fa-truck fa-3x text-white"></i>
+                    </div>
+                    <div class="featurs-content text-center">
+                        <h5>Miễn Phí Giao Hàng</h5>
+                        <p class="mb-0">Cho đơn hàng trên 300.000đ</p>
+                    </div>
+                </div>
+            </a>
+            <div class="col-md-6 col-lg-3">
+                <div class="featurs-item text-center rounded p-4">
+                    <div class="featurs-icon rounded-circle mx-auto icon-security">
+                        <i class="fas fa-user-shield fa-3x text-white"></i>
+                    </div>
+                    <div class="featurs-content text-center">
+                        <h5>Thanh Toán An Toàn</h5>
+                        <p class="mb-0">Bảo mật 100%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="featurs-item text-center rounded p-4">
+                    <div class="featurs-icon rounded-circle mx-auto icon-return">
+                        <i class="fas fa-exchange-alt fa-3x text-white"></i>
+                    </div>
+                    <div class="featurs-content text-center">
+                        <h5>Đổi Trả 30 Ngày</h5>
+                        <p class="mb-0">Đảm bảo hoàn tiền</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="featurs-item text-center rounded p-4">
+                    <div class="featurs-icon rounded-circle mx-auto icon-support">
+                        <i class="fa fa-phone-alt fa-3x text-white"></i>
+                    </div>
+                    <div class="featurs-content text-center">
+                        <h5>Hỗ Trợ 24/7</h5>
+                        <p class="mb-0">Hỗ trợ mọi lúc</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featurs Section End -->
+
+
+<!-- Fruits Shop Start-->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <div class="tab-class text-center">
+            <div class="row g-4">
+                <div class="col-lg-4 text-start">
+                    <h1>Sản phẩm nổi bật</h1>
+                </div>
+                <div class="col-lg-8 text-end">
+                    <ul class="nav nav-pills d-inline-flex text-center mb-5">
+                        <li class="nav-item">
+                            <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
+                                <span class="text-dark" style="width: 130px;">All Products</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane fade show p-0 active">
+                    <div class="row g-4">
+                        <div class="col-lg-12">
+                            <div class="row g-4">
+                                @await Html.PartialAsync("ProductsItem")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Start pagination *@
+            <div class="col-12">
+                <div class="pagination d-flex justify-content-center mt-5">
+                    @if (currentPages == 1)
+                    {
+                        <a href="#" class="disabled rounded">&laquo;</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Recommend", new { loai = loais, page = currentPages - 1 })" class="rounded">&laquo;</a>
+                    }
+
+                    @* 1 2 3 4 5 ..  *@
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <a href="@Url.Action("Recommend", new { loai = loais, page = i })" class="@(i == currentPages ? "active" : "") rounded">@i</a>
+                    }
+
+
+                    @if (currentPages == totalPages)
+                    {
+                        <a href="#" class="disabled rounded">&raquo;</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Recommend", new { loai = loais, page = currentPages + 1 })" class="rounded">&raquo;</a>
+                    }
+                </div>
+            </div>
+            @* End pagination *@
+           
+        </div>
+    </div>
+</div>
+<!-- Fruits Shop End-->
+
+
+<!-- Featurs Start -->
+<div class="container-fluid service py-5">
+    <div class="container py-5">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <a href="#">
+                    <div class="service-item bg-secondary rounded border border-secondary">
+                        <img src="img/DongHo.jpg" class="img-fluid rounded-top w-100" alt="">
+                        <div class="px-4 rounded-bottom">
+                            <div class="service-content bg-primary text-center p-4 rounded">
+                                <h5 class="text-white">Đồng hồ mới nhất</h5>
+                                <h3 class="mb-0">20% OFF</h3>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="#">
+                    <div class="service-item bg-dark rounded border border-dark">
+                        <img src="img/AoQuan.jpg" class="img-fluid rounded-top w-100" alt="">
+                        <div class="px-4 rounded-bottom">
+                            <div class="service-content bg-light text-center p-4 rounded">
+                                <h5 class="text-primary">Áo quần chất lượng cao</h5>
+                                <h3 class="mb-0">Free ship</h3>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <a href="#">
+                    <div class="service-item bg-primary rounded border border-primary">
+                        <img src="img/LapTop.webp" class="img-fluid rounded-top w-100" alt="">
+                        <div class="px-4 rounded-bottom">
+                            <div class="service-content bg-secondary text-center p-4 rounded">
+                                <h5 class="text-white">Máy tính hiện đại</h5>
+                                <h3 class="mb-0">giảm 30%</h3>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featurs End -->
+<!-- Vesitable Shop Start-->
+@* <div class="container-fluid vesitable py-5">
+    <div class="container py-5">
+        <h1 class="mb-0">Sản phẩm mới nhất</h1>
+        <div class="owl-carousel vegetable-carousel justify-content-center">
+            @foreach (var item in Model)
+            {
+                <div class="border border-primary rounded position-relative vesitable-item">
+                    <div class="vesitable-img">
+                        <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH">
+                            <img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid w-100 rounded-top" alt="">
+                        </a>
+                    </div>
+                    <div class="p-4 rounded-bottom">
+                        <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH">
+                            <h4>@item.TenHH</h4>
+                        </a>
+                        <div class="d-flex justify-content-between flex-lg-wrap">
+                            <p class="text-dark fs-5 fw-bold mb-0">$(@item.DonGia)</p>
+                            <a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@item.MaHH" class="btn border border-secondary rounded-pill px-3 text-dark"><i class="fa fa-shopping-bag me-2 text-dark"></i> Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div> *@
+<!-- Vesitable Shop End -->

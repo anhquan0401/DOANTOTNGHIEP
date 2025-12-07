@@ -1,0 +1,135 @@
+﻿<form asp-action="Search" asp-controller="Shop" method="post" autocomplete="off" class="w-100">
+    <div class="search-wrapper">
+        <div class="search-box-modern d-flex align-items-center">
+
+            <span class="search-icon-deco ps-3 text-muted">
+                <i class="fa fa-search"></i>
+            </span>
+
+            <input type="text"
+                   id="searchBox"
+                   name="query"
+                   class="form-control search-input"
+                   placeholder="Tìm sản phẩm (ví dụ: Nike...)"
+                   aria-label="Search">
+
+            <button type="submit" class="btn search-btn">
+                Tìm kiếm
+            </button>
+        </div>
+
+        <div id="suggestionsBox" class="suggestions-dropdown list-group">
+        </div>
+    </div>
+</form>
+
+<style>
+    /* --- 1. Wrapper chính --- */
+    .search-wrapper {
+        position: relative;
+        z-index: 1000;
+        max-width: 600px; /* Giới hạn chiều rộng cho đẹp */
+        margin: 0 auto; /* Căn giữa */
+    }
+
+    /* --- 2. Thanh tìm kiếm (Viên thuốc) --- */
+    .search-box-modern {
+        background: #fff;
+        border: 2px solid #eee; /* Viền xám nhạt tinh tế */
+        border-radius: 50px; /* Bo tròn hoàn toàn */
+        padding: 5px; /* Khoảng cách đệm bên trong */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* Bóng đổ rất nhẹ */
+    }
+
+        /* Hiệu ứng khi đang nhập liệu (Focus) */
+        .search-box-modern:focus-within {
+            border-color: #0d6efd; /* Đổi màu viền khi focus */
+            box-shadow: 0 4px 20px rgba(13, 110, 253, 0.15); /* Bóng đổ màu xanh */
+            transform: translateY(-2px);
+        }
+
+    /* --- 3. Ô Input --- */
+    .search-input {
+        border: none !important; /* Bỏ viền mặc định */
+        background: transparent !important; /* Nền trong suốt */
+        box-shadow: none !important; /* Bỏ bóng mặc định */
+        padding-left: 10px;
+        font-size: 1rem;
+        color: #333;
+    }
+
+        .search-input::placeholder {
+            color: #aaa;
+            font-weight: 300;
+        }
+
+    /* --- 4. Nút Tìm kiếm --- */
+    .search-btn {
+        border-radius: 30px; /* Bo tròn theo khung */
+        padding: 8px 25px;
+        background-color: #0d6efd; /* Màu chủ đạo */
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        white-space: nowrap; /* Giữ chữ không bị xuống dòng */
+    }
+
+        .search-btn:hover {
+            background-color: #0b5ed7;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+            transform: scale(1.05);
+        }
+
+    /* --- 5. Hộp Gợi ý (Floating Dropdown) --- */
+    .suggestions-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        background-color: #fff;
+        border: 1px solid #f0f0f0;
+        border-radius: 15px; /* Bo góc hộp gợi ý */
+        /* Hiệu ứng đổ bóng nổi */
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-top: 10px; /* Cách thanh tìm kiếm 1 đoạn nhỏ */
+        max-height: 400px;
+        overflow-y: auto;
+        /* Animation xuất hiện */
+        display: none;
+        animation: slideDown 0.3s ease-out;
+    }
+    /* Tùy chỉnh thanh cuộn */
+    .suggestions-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .suggestions-dropdown::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    /* Item trong danh sách */
+    .suggestions-dropdown .list-group-item {
+        border: none;
+        padding: 12px 20px;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f9f9f9;
+    }
+
+        .suggestions-dropdown .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestions-dropdown .list-group-item:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+    /* Icon trang trí đầu thanh search */
+    .search-icon-deco {
+        font-size: 1.1rem;
+    }
+</style>

@@ -1,0 +1,609 @@
+﻿@model IEnumerable<WebApplication1.Areas.Admin.Models.HoaDonAdminVM>
+
+@{
+    ViewData["Title"] = "Quản lý hóa đơn";
+    var Tongordernew = ViewBag.TongOrder;
+    var TongCOD = ViewBag.COD;
+    var TongCK = ViewBag.CK;
+    var Today = DateTime.Now;
+}
+
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #06b6d4;
+        --purple-color: #8b5cf6;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
+
+    .invoice-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--purple-color), #7c3aed);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: 0 4px 6px rgba(139, 92, 246, 0.3);
+    }
+
+    .header-title h1 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .header-subtitle {
+        color: var(--text-muted);
+        margin: 0.25rem 0 0 0;
+        font-size: 0.9375rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--bg-light), white);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.primary {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .stat-icon.success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+    }
+
+    .stat-icon.warning {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0.5rem 0;
+    }
+
+    .stat-date {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+
+    .table-header {
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .table-header h2 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .invoice-table thead {
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .invoice-table thead th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+    .invoice-table tbody tr {
+        transition: all 0.2s;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .invoice-table tbody tr:hover {
+        background: var(--bg-light);
+        transform: scale(1.005);
+    }
+
+    .invoice-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .badge-id {
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        color: #3730a3;
+        font-family: monospace;
+    }
+
+    .badge-cod {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+    }
+
+    .badge-transfer {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .badge-status {
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+    }
+
+    .badge-pending {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+    }
+
+    .badge-processing {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .badge-shipped {
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        color: #3730a3;
+    }
+
+    .badge-delivered {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+    }
+
+    .badge-cancelled {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+    }
+
+    .price-display {
+        font-weight: 700;
+        color: var(--success-color);
+        font-size: 0.9375rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+        transform: translateY(-1px);
+    }
+
+    .btn-details {
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+        color: #3730a3;
+    }
+
+    .btn-details:hover {
+        background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+        transform: translateY(-1px);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #fecaca, #fca5a5);
+        transform: translateY(-1px);
+    }
+
+    .text-truncate {
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+</style>
+
+<div class="invoice-container">
+    <!-- Page Header with Stats -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-icon">
+                📋
+            </div>
+            <div class="header-title">
+                <h1>Quản lý hóa đơn</h1>
+                <p class="header-subtitle">Theo dõi và quản lý tất cả đơn hàng trong hệ thống</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <a asp-action="TongOrder" class="stat-card" style="text-decoration: none;">
+                <div class="stat-card-header">
+                    <div class="stat-icon primary">
+                        📊
+                    </div>
+                    <div class="stat-label">Tổng hóa đơn hôm nay</div>
+                </div>
+                <div class="stat-value">@Tongordernew</div>
+                <div class="stat-date">
+                    <span>📅</span>
+                    <span>@Today.ToString("dd/MM/yyyy")</span>
+                </div>
+            </a>
+
+            <a asp-action="TongCOD" class="stat-card" style="text-decoration: none;">
+                <div class="stat-card-header">
+                    <div class="stat-icon warning">
+                        💵
+                    </div>
+                    <div class="stat-label">Thanh toán COD</div>
+                </div>
+                <div class="stat-value">@TongCOD</div>
+                <div class="stat-date">
+                    <span>📅</span>
+                    <span>@Today.ToString("dd/MM/yyyy")</span>
+                </div>
+            </a>
+
+            <a asp-action="TongCK" class="stat-card" style="text-decoration: none;">
+                <div class="stat-card-header">
+                    <div class="stat-icon success">
+                        💳
+                    </div>
+                    <div class="stat-label">Chuyển khoản</div>
+                </div>
+                <div class="stat-value">@TongCK</div>
+                <div class="stat-date">
+                    <span>📅</span>
+                    <span>@Today.ToString("dd/MM/yyyy")</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-header">
+            <h2>
+                <span>📑</span>
+                Danh sách hóa đơn
+            </h2>
+        </div>
+
+        <div class="table-wrapper">
+            @if (Model.Any())
+            {
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>🆔</span> Mã HD
+                            </th>
+                            <th>
+                                <span>👤</span> Khách hàng
+                            </th>
+                            <th>
+                                <span>📅</span> Ngày đặt
+                            </th>
+                            <th>
+                                <span>🚚</span> Ngày giao
+                            </th>
+                            <th>
+                                <span>📱</span> SĐT
+                            </th>
+                            <th>
+                                <span>📍</span> Địa chỉ
+                            </th>
+                            <th>
+                                <span>💳</span> Thanh toán
+                            </th>
+                            <th>
+                                <span>🚛</span> Vận chuyển
+                            </th>
+                            <th>
+                                <span>💰</span> Phí VC
+                            </th>
+                            <th>
+                                <span>📊</span> Trạng thái
+                            </th>
+                            <th>
+                                <span>🔄</span> Cập nhật
+                            </th>
+                            <th>
+                                <span>💵</span> Tổng tiền
+                            </th>
+                            <th>
+                                <span>📝</span> Ghi chú
+                            </th>
+                            <th>
+                                <span>⚙️</span> Thao tác
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge badge-id">#@item.MaHd</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-dark);">@item.HoTen</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">ID: @item.MaKh</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="white-space: nowrap;">
+                                        @(item.NgayDat != null ? item.NgayDat.ToString("dd/MM/yyyy") : "N/A")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="white-space: nowrap;">
+                                        @(item.NgayGiao.HasValue? item.NgayGiao.Value.ToString("dd/MM/yyyy") : "Chưa giao")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 600;">@item.DienThoai</span>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" title="@item.DiaChi">
+                                        @item.DiaChi
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (item.CachThanhToan?.ToUpper() == "COD")
+                                    {
+                                        <span class="badge badge-cod">
+                                            <span>💵</span> COD
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-transfer">
+                                            <span>💳</span> CK
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <span style="font-size: 0.875rem;">@item.CachVanChuyen</span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 600; color: var(--warning-color);">
+                                        @(item.PhiVanChuyen != null ? item.PhiVanChuyen.ToString("N0") : "0") đ
+                                    </span>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusClass = "badge-pending";
+                                        var statusIcon = "⏳";
+                                        var statusText = "Chờ xử lý";
+
+                                        switch (item.MaTrangThai)
+                                        {
+                                            case 0:
+                                                statusClass = "badge-pending";
+                                                statusIcon = "⏳";
+                                                statusText = "Chờ xử lý";
+                                                break;
+                                            case 1:
+                                                statusClass = "badge-processing";
+                                                statusIcon = "🔄";
+                                                statusText = "Đang xử lý";
+                                                break;
+                                            case 2:
+                                                statusClass = "badge-shipped";
+                                                statusIcon = "🚚";
+                                                statusText = "Đang giao";
+                                                break;
+                                            case 3:
+                                                statusClass = "badge-delivered";
+                                                statusIcon = "✓";
+                                                statusText = "Đã giao";
+                                                break;
+                                            case 4:
+                                                statusClass = "badge-cancelled";
+                                                statusIcon = "✗";
+                                                statusText = "Đã hủy";
+                                                break;
+                                        }
+                                    }
+                                    <span class="badge badge-status @statusClass">
+                                        <span>@statusIcon</span> @statusText
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="white-space: nowrap; font-size: 0.8125rem;">
+                                        @(item.NgayCapNhat != null ? item.NgayCapNhat.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="price-display">
+                                        @(item.Tong != null ? item.Tong.ToString("N0") : "0") đ
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" title="@item.GhiChu" style="max-width: 120px;">
+                                        @(string.IsNullOrEmpty(item.GhiChu) ? "---" : item.GhiChu)
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a asp-action="Edit" asp-route-id="@item.MaHd" class="btn-action btn-edit">
+                                            <span>✏️</span> Sửa
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.MaHd" class="btn-action btn-details">
+                                            <span>👁️</span> Xem
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.MaHd" class="btn-action btn-delete">
+                                            <span>🗑️</span> Xóa
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p style="font-size: 1.125rem; font-weight: 600;">Chưa có hóa đơn nào</p>
+                    <p>Hóa đơn sẽ được hiển thị ở đây khi có đơn hàng mới</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

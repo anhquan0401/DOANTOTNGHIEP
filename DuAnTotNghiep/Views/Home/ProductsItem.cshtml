@@ -1,0 +1,49 @@
+﻿@model IEnumerable<WebApplication1.ViewModels.RecommendProduct>
+@foreach (var item in Model)
+{
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="rounded position-relative fruite-item">
+            <div class="fruite-img">
+                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH"
+                   onclick="trackClick(@item.MaHH)">
+                    <img src="~/Hinh/HangHoa/@item.Hinh" class="img-fluid w-100 rounded-top" alt="@item.TenHH">
+                </a>
+            </div>
+            <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.MaHH"
+                   onclick="trackClick(@item.MaHH)">
+                    <h4>@item.TenHH</h4>
+                    <p>SL: @item.SoLuong</p>
+                    <p>Sản phẩm</p>
+                </a>
+                <div class="d-flex justify-content-between flex-lg-wrap">
+                    <p class="text-dark fs-5 fw-bold mb-0">@string.Format("{0:N0} ₫", item.DonGia)</p>
+                    <a asp-action="AddToCart" asp-controller="Cart" asp-route-id="@item.MaHH"
+                       class="btn border border-secondary rounded-pill px-3 text-dark"
+                       onclick="trackClick(@item.MaHH)">
+                        <i class="fa fa-shopping-bag me-2 text-dark"></i> Add to cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function trackClick(productId) {
+            $.ajax({
+                url: '/Home/TrackClick',
+                type: 'POST',
+                data: { productId: productId }, // trùng với tên tham số action
+                success: function () {
+                    console.log("Click tracked: " + productId);
+                },
+                error: function (err) {
+                    console.error("Error tracking click", err);
+                }
+            });
+        }
+
+    </script>
+}

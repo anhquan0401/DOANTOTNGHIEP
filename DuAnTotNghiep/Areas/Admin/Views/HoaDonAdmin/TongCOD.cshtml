@@ -1,0 +1,85 @@
+﻿@model IEnumerable<WebApplication1.Areas.Admin.Models.HoaDonAdminVM>
+@{
+    ViewData["Title"] = "Danh sách thanh toán COD";
+    var Today = DateTime.Today;
+}
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Mã khách hàng</th>
+                        <th scope="col">Họ và Tên</th>
+                        <th scope="col">Mã hóa đơn</th>
+                        <th scope="col">Ngày đặt</th>
+                        <th scope="col">Ngày giao</th>
+                        <th scope="col">Số điện thoại</th>
+                        <th scope="col">Địa chỉ</th>
+                        <th scope="col">Cách thanh toán</th>
+                        <th scope="col">Cách vận chuyển</th>
+                        <th scope="col">Phí vận chuyển</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Ngày cập nhật trạng thái</th>
+                        <th scope="col">Tổng tiền</th>
+                        <th scope="col">Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <p class="mb-0 mt-4">@item.MaKh</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.HoTen</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.MaHd</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.NgayDat</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.NgayGiao</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.DienThoai</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.DiaChi</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.CachThanhToan</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.CachVanChuyen</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.PhiVanChuyen</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.MaTrangThai</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.NgayCapNhat</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.Tong$</p>
+                            </td>
+                            <td>
+                                <p class="mb-0 mt-4">@item.GhiChu</p>
+                            </td>
+                            <th scope="row">
+                                <a asp-action="Edit" asp-route-id="@item.MaHd">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.MaHd">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.MaHd">Delete</a>
+                            </th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+﻿@model IEnumerable<WebApplication1.ViewModels.MenuLoaiVM>
+
+@foreach (var item in Model)
+{
+    <li class="nav-item">
+        <a asp-controller="Home" asp-action="Index" asp-route-loai="@item.MaLoai" class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill">
+            <span class="text-dark" style="width: 130px;">@item.TenLoai</span>
+        </a>
+    </li>
+}

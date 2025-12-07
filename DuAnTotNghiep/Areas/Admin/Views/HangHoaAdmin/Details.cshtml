@@ -1,0 +1,464 @@
+﻿@model WebApplication1.Data.HangHoa
+
+@{
+    ViewData["Title"] = "Chi tiết hàng hóa";
+}
+
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --secondary-color: #64748b;
+        --success-color: #10b981;
+        --info-color: #3b82f6;
+        --warning-color: #f59e0b;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --bg-card: #ffffff;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
+
+    .details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 0;
+    }
+
+        .page-title h2 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        color: white;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+        }
+
+    .btn-secondary {
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+            border-color: var(--secondary-color);
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .image-card {
+        position: sticky;
+        top: 2rem;
+    }
+
+    .image-container {
+        position: relative;
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .discount-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 1.125rem;
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+    }
+
+    .view-count {
+        padding: 1.5rem;
+        background: var(--bg-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .info-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--bg-light), white);
+        border-bottom: 2px solid var(--border-color);
+        padding: 1.5rem 2rem;
+    }
+
+        .card-header h3 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+    .card-body {
+        padding: 2rem;
+        flex: 1;
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+    }
+
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    .price-display {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .price-current {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--success-color);
+    }
+
+    .price-original {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        text-decoration: line-through;
+    }
+
+    .highlight-box {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border-left: 4px solid var(--info-color);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .description-box {
+        background: var(--bg-light);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border: 2px solid var(--border-color);
+        line-height: 1.8;
+        color: var(--text-dark);
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+    }
+
+</style>
+
+<div class="details-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>📦 Chi tiết hàng hóa</h2>
+            <span class="badge-status">
+                <span style="width: 8px; height: 8px; background: white; border-radius: 50%; display: block;"></span>
+                Đang hoạt động
+            </span>
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Edit" asp-route-id="@Model.MaHh" class="btn btn-primary">
+                ✏️ Chỉnh sửa
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                ← Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <!-- Image Card -->
+        <div class="image-card card">
+            <div class="image-container">
+                @if (!string.IsNullOrEmpty(Model.Hinh))
+                {
+                    <img src="/Hinh/HangHoa/@Model.Hinh" alt="@Model.TenHh" />
+                }
+                else
+                {
+                    <div style="color: var(--text-muted); text-align: center;">
+                        <div style="font-size: 4rem;">📷</div>
+                        <div>Chưa có hình ảnh</div>
+                    </div>
+                }
+                @if (Model.GiamGia > 0)
+                {
+                    <div class="discount-badge">
+                        -@Model.GiamGia%
+                    </div>
+                }
+            </div>
+            <div class="view-count">
+                <span style="font-size: 1.25rem;">👁️</span>
+                <span>@Model.SoLanXem lượt xem</span>
+            </div>
+        </div>
+
+        <!-- Information Card -->
+        <div class="info-card card">
+            <div class="card-header">
+                <h3>
+                    <span>ℹ️</span>
+                    Thông tin sản phẩm
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- Basic Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <span>📝</span> Thông tin chung
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Mã hàng hóa:</div>
+                        <div class="info-value">
+                            <span class="tag">#@Model.MaHh</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Tên sản phẩm:</div>
+                        <div class="info-value" style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">
+                            @Model.TenHh
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Tên rút gọn:</div>
+                        <div class="info-value">@Model.TenAlias</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Đơn vị tính:</div>
+                        <div class="info-value">
+                            <span class="tag">📦 @Model.MoTaDonVi</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Ngày sản xuất:</div>
+                        <div class="info-value">
+                            <span class="tag">📅 @Model.NgaySx.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <span>💰</span> Thông tin giá
+                    </div>
+
+                    <div class="highlight-box">
+                        <div class="price-display">
+                            @if (Model.GiamGia > 0)
+                            {
+                                var giaSauGiam = Model.DonGia.HasValue ? Model.DonGia.Value * (1 - Model.GiamGia / 100) : 0;
+                                <span class="price-current">@giaSauGiam.ToString("N0") đ</span>
+                                <span class="price-original">@(Model.DonGia.HasValue? Model.DonGia.Value.ToString("N0") : "0") đ</span>
+                            }
+                            else
+                            {
+                                <span class="price-current">@(Model.DonGia.HasValue? Model.DonGia.Value.ToString("N0") : "0") đ</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (Model.GiamGia > 0)
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Giảm giá:</div>
+                            <div class="info-value">
+                                <span class="tag" style="background: #fee2e2; color: #dc2626; border-color: #fecaca;">
+                                    🔥 @Model.GiamGia%
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Category Information -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <span>🏷️</span> Phân loại
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Loại hàng:</div>
+                        <div class="info-value">
+                            <span class="tag">@Html.DisplayFor(model => model.MaLoaiNavigation.MaLoai)</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Nhà cung cấp:</div>
+                        <div class="info-value">
+                            <span class="tag">🏭 @Html.DisplayFor(model => model.MaNccNavigation.MaNcc)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                @if (!string.IsNullOrEmpty(Model.MoTa))
+                {
+                    <div class="info-section">
+                        <div class="section-title">
+                            <span>📄</span> Mô tả chi tiết
+                        </div>
+                        <div class="description-box">
+                            @Model.MoTa
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,603 @@
+﻿@model WebApplication1.Areas.Admin.Models.KhachHangAdminVM
+
+@{
+    ViewData["Title"] = "Chỉnh sửa người dùng";
+}
+
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary-color: #64748b;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem 0;
+    }
+
+    .edit-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 1rem 1rem 0 0;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    }
+
+    .page-title-wrapper h2 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.875rem;
+        font-weight: 700;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        margin: 0.25rem 0 0 0;
+        font-size: 0.9375rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .form-body {
+        padding: 2.5rem;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1.125rem;
+    }
+
+    .section-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--bg-light), #e2e8f0);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .form-group {
+        position: relative;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+    .required-mark {
+        color: var(--danger-color);
+        margin-left: 0.25rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        background-color: white;
+        font-family: inherit;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: #cbd5e1;
+        }
+
+        .form-control:disabled,
+        .form-control[readonly] {
+            background-color: var(--bg-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+    input[type="file"].form-control {
+        padding: 0.625rem 1rem;
+        cursor: pointer;
+    }
+
+    .text-danger {
+        color: var(--danger-color);
+        font-size: 0.8125rem;
+        margin-top: 0.375rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    .form-hint {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        margin-top: 0.375rem;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .image-preview-section {
+        background: var(--bg-light);
+        border: 2px dashed var(--border-color);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+        .image-preview-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 4px solid white;
+        }
+
+    .image-label {
+        display: block;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-light);
+        border-radius: 0.5rem;
+        border: 2px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .checkbox-wrapper:hover {
+            background: white;
+            border-color: var(--primary-color);
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+    .checkbox-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .radio-option {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-light);
+        border-radius: 0.5rem;
+        border: 2px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .radio-option:hover {
+            background: white;
+            border-color: var(--primary-color);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .radio-option label {
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        border-top: 2px solid var(--border-color);
+    }
+
+    .btn {
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        color: white;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        flex: 1;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+
+    .btn-secondary {
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+            border-color: var(--secondary-color);
+        }
+
+    .info-badge {
+        display: inline-block;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        padding: 0.625rem 0.875rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        border: 2px solid var(--border-color);
+    }
+
+    .quick-info {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem 1.25rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+    }
+
+    .quick-info-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .quick-info-text {
+        color: #1e40af;
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+
+   
+</style>
+
+<div class="edit-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div class="icon-wrapper">
+                ✏️
+            </div>
+            <div class="page-title-wrapper">
+                <h2>Chỉnh sửa người dùng</h2>
+                <p class="page-subtitle">Cập nhật thông tin chi tiết cho người dùng</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <div class="form-body">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Quick Info -->
+                <div class="quick-info">
+                    <div class="quick-info-icon">ℹ️</div>
+                    <div class="quick-info-text">
+                        <strong>Lưu ý:</strong> Các trường đánh dấu <span class="required-mark">*</span> là bắt buộc. Vui lòng kiểm tra kỹ thông tin trước khi lưu.
+                    </div>
+                </div>
+
+                <!-- Section 1: Account Information -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">🔐</div>
+                        <span>Thông tin tài khoản</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">
+                            Tên đăng nhập
+                        </label>
+                        <div class="info-badge">#@Model.MaKh</div>
+                        <div class="form-hint">
+                            <span>🔒</span>
+                            Tên đăng nhập không thể thay đổi
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Personal Information -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">👤</div>
+                        <span>Thông tin cá nhân</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="HoTen">
+                            Họ và tên<span class="required-mark">*</span>
+                        </label>
+                        <input asp-for="HoTen" class="form-control" placeholder="Nhập họ và tên đầy đủ..." />
+                        <span asp-validation-for="HoTen" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                Giới tính<span class="required-mark">*</span>
+                            </label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input asp-for="GioiTinh" type="radio" value="true" id="male" />
+                                    <label for="male">
+                                        <span>♂️</span> Nam
+                                    </label>
+                                </div>
+                                <div class="radio-option">
+                                    <input asp-for="GioiTinh" type="radio" value="false" id="female" />
+                                    <label for="female">
+                                        <span>♀️</span> Nữ
+                                    </label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="GioiTinh" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="NgaySinh">
+                                Ngày sinh<span class="required-mark">*</span>
+                            </label>
+                            <input asp-for="NgaySinh" type="date" class="form-control" />
+                            <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Contact Information -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">📞</div>
+                        <span>Thông tin liên hệ</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="Email">
+                                Email<span class="required-mark">*</span>
+                            </label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DienThoai">
+                                Số điện thoại
+                            </label>
+                            <input asp-for="DienThoai" type="tel" class="form-control" placeholder="0123456789" />
+                            <span asp-validation-for="DienThoai" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="DiaChi">
+                            Địa chỉ
+                        </label>
+                        <input asp-for="DiaChi" class="form-control" placeholder="Nhập địa chỉ đầy đủ..." />
+                        <span asp-validation-for="DiaChi" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Section 4: Avatar -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">🖼️</div>
+                        <span>Hình đại diện</span>
+                    </div>
+
+                    <div class="image-preview-section">
+                        <img src="/Hinh/KhachHang/@ViewData["ImageFileName"]" alt="Avatar hiện tại"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22%3E%3Ccircle fill=%22%23ddd%22 cx=%2275%22 cy=%2275%22 r=%2275%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2260%22%3E👤%3C/text%3E%3C/svg%3E'" />
+                        <span class="image-label">Hình đại diện hiện tại</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Hinh">
+                            Tải lên hình đại diện mới
+                        </label>
+                        <input asp-for="Hinh" type="file" class="form-control" accept="image/*" />
+                        <span asp-validation-for="Hinh" class="text-danger"></span>
+                        <div class="form-hint">
+                            <span>📸</span>
+                            Định dạng: JPG, PNG, GIF. Kích thước tối đa: 5MB
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Account Settings -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <div class="section-icon">⚙️</div>
+                        <span>Cài đặt tài khoản</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                Trạng thái tài khoản
+                            </label>
+                            <div class="checkbox-wrapper">
+                                <input asp-for="HieuLuc" type="checkbox" id="hieuLuc" />
+                                <label for="hieuLuc" class="checkbox-label">
+                                    <span>✓</span>
+                                    <span>Tài khoản đang hoạt động</span>
+                                </label>
+                            </div>
+                            <span asp-validation-for="HieuLuc" class="text-danger"></span>
+                            <div class="form-hint">
+                                <span>⚠️</span>
+                                Bỏ chọn để khóa tài khoản người dùng
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="VaiTro">
+                                Vai trò<span class="required-mark">*</span>
+                            </label>
+                            <select asp-for="VaiTro" class="form-control">
+                                <option value="0">👤 Khách hàng</option>
+                                <option value="1">👔 Nhân viên</option>
+                                <option value="2">👑 Quản trị viên</option>
+                            </select>
+                            <span asp-validation-for="VaiTro" class="text-danger"></span>
+                            <div class="form-hint">
+                                <span>🔑</span>
+                                Chọn quyền hạn phù hợp cho người dùng
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span>
+                        Lưu thay đổi
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <span>←</span>
+                        Hủy bỏ
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Style select dropdown
+        document.querySelector('select[name="VaiTro"]').style.backgroundImage = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M8 11L3 6h10z'/%3E%3C/svg%3E\")";
+        document.querySelector('select[name="VaiTro"]').style.backgroundRepeat = "no-repeat";
+        document.querySelector('select[name="VaiTro"]').style.backgroundPosition = "right 0.75rem center";
+        document.querySelector('select[name="VaiTro"]').style.backgroundSize = "16px";
+        document.querySelector('select[name="VaiTro"]').style.paddingRight = "2.5rem";
+        document.querySelector('select[name="VaiTro"]').style.appearance = "none";
+    </script>
+}

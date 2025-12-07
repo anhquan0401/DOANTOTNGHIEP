@@ -1,0 +1,135 @@
+﻿@model IEnumerable<WebApplication1.Areas.Admin.Models.HangHoaAdminVM>
+
+@{
+    ViewData["Title"] = "Index";
+    var totalPages = ViewBag.TotalPages;
+    var currentPages = ViewBag.CurrentPage;
+    var loais = ViewBag.Loais;
+
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenHH)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLuong)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TenAlias)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MoTaDonVi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonGia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hinh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgaySx)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GiamGia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLanXem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MoTa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaLoai)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaNcc)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenHH)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuong)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenAlias)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoTaDonVi)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DonGia)
+                </td>
+                <td scope="row">
+                    <div class="d-flex align-items-center">
+                        <img src="~/Hinh/HangHoa/@item.HinhFile" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                    </div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NgaySx)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GiamGia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLanXem)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoTa)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaLoai)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaNcc)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MaHH">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.MaHH">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MaHH" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="col-12">
+    <div class="pagination d-flex justify-content-center mt-5">
+        @if (currentPages == 1)
+        {
+            <a style="margin-left: 20px;" href="#" class="disabled rounded">&laquo;</a>
+        }
+        else
+        {
+            <a style="margin-left: 20px;" href="@Url.Action("Index", new { loai = loais, page = currentPages - 1 })" class="rounded">&laquo;</a>
+        }
+
+        @* 1 2 3 4 5 ..  *@
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a style="margin-left: 20px;" href="@Url.Action("Index", new {loai = loais, page = i})" class="@(i == currentPages ? "active" : "") rounded">@i</a>
+        }
+
+
+        @if (currentPages == totalPages)
+        {
+            <a style="margin-left: 20px;" href="#" class="disabled rounded">&raquo;</a>
+        }
+        else
+        {
+            <a style="margin-left: 20px;" href="@Url.Action("Index", new { loai = loais, page = currentPages + 1 })" class="rounded">&raquo;</a>
+        }
+    </div>
+</div>
+

@@ -1,0 +1,898 @@
+﻿@model WebApplication1.ViewModels.CheckoutPageVM
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    // Calculate totals - Ensure these calculations are robust in your controller too
+    var subtotal = Model.Carts.Sum(c => c.ThanhTien);
+    var shippingCost = 0.0; // Placeholder - implement your shipping logic
+    var voucherDiscount = 0.0; // Placeholder - fetch applied voucher discount
+    var finalTotal = subtotal + shippingCost - voucherDiscount;
+
+    // Formatting Helpers (Consider moving to a helper class)
+    Func<double, string> FormatCurrency = value => value.ToString("#,##0").Replace(',', '.') + " đ";
+}
+
+<style>
+    /* 1. Variables & Base Styles */
+    :root {
+        --primary-color: #007bff; /* Blue */
+        --primary-hover: #0056b3;
+        --success-color: #10b981; /* Green */
+        --success-hover: #0f9b6c;
+        --danger-color: #ef4444; /* Red */
+        --border-color: #e2e8f0;
+        --bg-light: #f8fafc;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.07);
+        --shadow-lifted: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkout-page-container {
+        background-color: var(--bg-light);
+    }
+
+    /* 2. Main Layout - 2 Columns */
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: 1fr; /* 1 column on mobile */
+        gap: 2rem;
+    }
+
+    /* 3. Card Styling */
+    .checkout-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-soft);
+        padding: 2rem;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* 4. Billing/Shipping Details Card (Left) */
+    .billing-details-card h3, .order-summary-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+
+    textarea.form-control {
+        min-height: 120px;
+    }
+
+    /* Checkbox styling */
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 1.15em;
+        height: 1.15em;
+        margin-top: 0; /* Align better */
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* Hide/Show animation for address fields */
+    .shipping-fields {
+        overflow: hidden;
+        max-height: 500px; /* Adjust if needed */
+        transition: max-height 0.5s ease-out, opacity 0.3s ease-out 0.1s, margin-top 0.5s ease-out;
+        opacity: 1;
+        margin-top: 1.5rem;
+    }
+
+        .shipping-fields.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            transition: max-height 0.4s ease-in, opacity 0.2s ease-in, margin-top 0.4s ease-in;
+        }
+
+
+    /* 5. Order Summary Card (Right) - Sticky */
+    .order-summary-container {
+        position: sticky;
+        top: 2rem; /* Adjust offset as needed */
+    }
+
+    /* Summary Item List */
+    .summary-items-list {
+        max-height: 300px; /* Limit height and allow scroll if many items */
+        overflow-y: auto;
+        margin-bottom: 1.5rem;
+        padding-right: 0.5rem; /* Space for scrollbar */
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+    .summary-item-img img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+
+    .summary-item-info {
+        flex: 1;
+    }
+
+    .summary-item-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        display: block;
+    }
+
+    .summary-item-qty {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .summary-item-price {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+    }
+
+    /* Voucher Section */
+    .summary-voucher {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: #eef2ff; /* Light blue background */
+        border: 1px dashed var(--primary-color);
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+        .summary-voucher:hover {
+            background: #e0e7ff;
+        }
+
+    .voucher-icon {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+    }
+
+    .voucher-text {
+        flex: 1;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .voucher-action {
+        color: var(--primary-color);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .selected-voucher-display { /* Added */
+        font-size: 0.9rem;
+        color: var(--success-color);
+        font-weight: 600;
+        margin-top: -0.5rem; /* Pull up slightly */
+        margin-bottom: 1.5rem;
+        display: none; /* Hidden by default */
+    }
+
+    /* Calculation Rows */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+        .summary-row .label {
+            color: var(--text-muted);
+        }
+
+        .summary-row .value {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .summary-row.discount .value {
+            color: var(--success-color);
+        }
+    /* Style discount */
+
+    .summary-divider {
+        border-top: 1px solid var(--border-color);
+        margin: 1rem 0;
+    }
+
+    .summary-total {
+        font-size: 1.1rem;
+    }
+
+        .summary-total .label {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .summary-total .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+    /* 6. Payment Methods */
+    .payment-options h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        margin-top: 2rem; /* Space above payment */
+    }
+
+    .payment-option {
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .payment-option input[type="radio"] {
+            margin-right: 0.75rem;
+            cursor: pointer;
+        }
+
+        .payment-option label {
+            flex: 1;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0; /* Override default label margin */
+        }
+
+        .payment-option .payment-icon {
+            font-size: 1.5rem;
+            margin-left: 1rem;
+            color: var(--text-muted);
+        }
+
+        .payment-option:hover {
+            background: var(--bg-light);
+        }
+
+        .payment-option.selected { /* Style when selected */
+            border-color: var(--primary-color);
+            background: #f4f7ff;
+        }
+
+    .payment-details {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        padding-left: 1.75rem; /* Indent under radio */
+        display: none; /* Hidden by default */
+    }
+
+    .payment-option input[type="radio"]:checked ~ .payment-details {
+        display: block; /* Show details when checked */
+    }
+
+    #paypal-button-container { /* Ensure it fits */
+        margin-top: 1rem;
+        max-width: 100% !important;
+    }
+
+
+    /* 7. Action Button */
+    .btn-place-order {
+        display: block;
+        width: 100%;
+        padding: 0.875rem;
+        background: var(--success-color);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-place-order:hover {
+            background: var(--success-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+    /* 8. Modal Styling (Voucher) */
+    .modal-content {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: var(--shadow-lifted);
+    }
+
+    .modal-header {
+        background: var(--bg-light);
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    /* Style voucher items in modal similarly to the voucher list page */
+    .voucher-modal-item {
+        display: flex;
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+
+    .voucher-modal-stub {
+        flex: 0 0 100px;
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem 0.5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .voucher-modal-stub small {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .voucher-modal-stub div {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+    .voucher-modal-info {
+        flex: 1;
+        padding: 0.75rem 1rem;
+    }
+
+        .voucher-modal-info p {
+            margin-bottom: 0.25rem;
+        }
+
+        .voucher-modal-info .voucher-title {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .voucher-modal-info .voucher-details {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .voucher-modal-info .voucher-condition a {
+            font-size: 0.85rem;
+        }
+
+    .voucher-modal-select {
+        display: flex;
+        align-items: center;
+        padding-right: 1rem;
+    }
+
+    /* Responsive */
+    @@media (min-width: 992px) {
+        .checkout-layout {
+            grid-template-columns: 7fr 5fr; /* Adjust ratio as needed */
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .checkout-card {
+            padding: 1.5rem;
+        }
+
+        .summary-item {
+            gap: 0.75rem;
+        }
+
+        .summary-item-img img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .summary-item-name {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Thanh toán</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Checkout</li>
+    </ol>
+</div>
+<div class="container-fluid py-5 checkout-page-container">
+    <div class="container py-5">
+
+        @if (!Model.Carts.Any())
+        {
+            <div class="alert alert-warning text-center">
+                <h4>Giỏ hàng trống!</h4>
+                <p>Bạn cần thêm sản phẩm vào giỏ hàng trước khi thanh toán.</p>
+                <a asp-action="Index" asp-controller="Shop" class="btn btn-primary">Quay lại cửa hàng</a>
+            </div>
+        }
+        else
+        {
+            <form asp-action="Checkout" asp-controller="Cart">
+                <div class="checkout-layout">
+
+                    <div class="billing-details-card checkout-card">
+                        <h3>Thông Tin Thanh Toán & Giao Hàng</h3>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="GiongKhachHang" name="GiongKhachHang" value="false">
+                            <label class="form-check-label" for="GiongKhachHang">
+                                Thông tin người nhận giống thông tin tài khoản?
+                            </label>
+                        </div>
+
+                        <div class="shipping-fields">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Tên người nhận <sup>*</sup></label>
+                                        <input type="text" class="form-control" name="HoTen" placeholder="Nhập họ tên...">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Địa chỉ <sup>*</sup></label>
+                                        <input type="text" class="form-control" placeholder="Số nhà, Đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố" name="DiaChi">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại<sup>*</sup></label>
+                                        <input type="tel" class="form-control" name="DienThoai" placeholder="Nhập SĐT nhận hàng...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <label class="form-label">Ghi Chú Đơn Hàng (Tùy chọn)</label>
+                            <textarea name="GhiChu" class="form-control" spellcheck="false" rows="5" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian giao hàng mong muốn..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="order-summary-container">
+                        <div class="order-summary-card checkout-card">
+                            <h3>Tóm Tắt Đơn Hàng</h3>
+
+                            <div class="summary-items-list">
+                                @foreach (var item in Model.Carts)
+                                {
+                                    <div class="summary-item">
+                                        <div class="summary-item-img">
+                                            <img src="~/Hinh/HangHoa/@item.Img" alt="@item.TenHH">
+                                        </div>
+                                        <div class="summary-item-info">
+                                            <span class="summary-item-name">@item.TenHH</span>
+                                            <span class="summary-item-qty">Số lượng: @item.Soluong</span>
+                                        </div>
+                                        <div class="summary-item-price">
+                                            @FormatCurrency(item.ThanhTien)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="summary-voucher" data-bs-toggle="modal" data-bs-target="#voucherModal">
+                                <i class="bi bi-ticket-perforated voucher-icon"></i>
+                                <span class="voucher-text">Shop Voucher</span>
+                                <span class="voucher-action">Chọn Voucher <i class="bi bi-chevron-right"></i></span>
+                            </div>
+                            <div class="selected-voucher-display" id="selectedVoucherInfo">
+                            </div>
+
+
+                            <div class="summary-row">
+                                <span class="label">Tạm tính:</span>
+                                <span class="value" id="subtotalValue">@FormatCurrency(subtotal)</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="label">Phí vận chuyển:</span>
+                                <span class="value" id="shippingValue">@FormatCurrency(shippingCost)</span>
+                            </div>
+                            <div class="summary-row discount" id="discountRow" style="display: none;">
+                                <span class="label">Giảm giá Voucher:</span>
+                                <span class="value" id="discountValue"></span>
+                            </div>
+
+                            <div class="summary-divider"></div>
+
+                            <div class="summary-row summary-total">
+                                <span class="label">Tổng cộng:</span>
+                                <span class="value" id="finalTotalValue">@FormatCurrency(finalTotal)</span>
+                            </div>
+
+                            <div class="payment-options">
+                                <h4>Phương thức thanh toán</h4>
+                                <div class="payment-option">
+                                    <input type="radio" id="paymentCod" name="PaymentMethod" value="COD" checked>
+                                    <label for="paymentCod">Thanh toán khi nhận hàng (COD)</label>
+                                    <i class="bi bi-cash-coin payment-icon"></i>
+                                    <div class="payment-details">Trả tiền mặt khi nhận hàng.</div>
+                                </div>
+                                @* <div class="payment-option">
+                                    <input type="radio" id="paymentBank" name="PaymentMethod" value="BankTransfer">
+                                    <label for="paymentBank">Chuyển khoản ngân hàng</label>
+                                    <i class="bi bi-bank payment-icon"></i>
+                                    <div class="payment-details">Thực hiện thanh toán vào tài khoản ngân hàng của chúng tôi...</div>
+                                </div> *@
+                                <div class="payment-option">
+                                    <input type="radio" id="paymentPaypal" name="PaymentMethod" value="PayPal">
+                                    <label for="paymentPaypal">Thanh toán qua PayPal</label>
+                                    <i class="bi bi-paypal payment-icon"></i>
+                                    <div id="paypal-button-container" style="display: none; width: 100%; margin-top: 1rem;"></div>
+                                </div>
+                            </div>
+
+
+                            <button type="submit" id="btnPlaceOrderCod" class="btn-place-order">Đặt Hàng (COD)</button>
+                            <div id="paypalSubmitPlaceholder" style="display: none;">
+                                <p class="text-center text-muted mt-3">Hoàn tất thanh toán qua PayPal để đặt hàng.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        }
+    </div>
+</div>
+<div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">Chọn Voucher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex mb-4">
+                    <input type="text" id="voucherSearchInput" class="form-control me-2" placeholder="Nhập mã Voucher..." />
+                    <button class="btn btn-outline-primary" id="applyManualVoucherBtn">ÁP DỤNG</button>
+                </div>
+
+                <h6 class="fw-bold text-primary">Voucher có thể sử dụng</h6>
+                <p class="text-muted small">Chọn 1 Voucher để áp dụng</p>
+                <div id="voucherListContainer">
+                    @if (Model.VoucherUsers != null && Model.VoucherUsers.Any())
+                    {
+                        foreach (var item in Model.VoucherUsers.Where(vu => !vu.IsUsed && vu.VoucherIdNavigation.ExpirationDate >= DateTime.Now))
+                        {
+                            
+                            bool canApply = !item.VoucherIdNavigation.OrderMinimum.HasValue || 
+                                           item.VoucherIdNavigation.OrderMinimum.Value <= (decimal)subtotal;
+                            string disabledClass = canApply ? "" : "disabled opacity-50 pe-none"; // Disable if min order not met
+
+                            <div class="voucher-modal-item mb-3 @disabledClass">
+                                <div class="voucher-modal-stub">
+                                    <i class="bi bi-ticket-percent fs-3"></i>
+                                    <div>@item.VoucherIdNavigation.DiscountVoucher%</div>
+                                    <small>GIẢM GIÁ</small>
+                                </div>
+                                <div class="voucher-modal-info">
+                                    <p class="voucher-title mb-1">@item.VoucherIdNavigation.VoucherName</p>
+                                    <p class="voucher-details mb-1">
+                                        Đơn tối thiểu: @(item.VoucherIdNavigation.OrderMinimum.HasValue? FormatCurrency((double) item.VoucherIdNavigation.OrderMinimum.Value) : "Không")
+                                    </p>
+                                    <p class="voucher-details voucher-condition">
+                                        HSD: @item.VoucherIdNavigation.ExpirationDate.ToString("dd/MM/yyyy")
+                                        <a href="#" class="text-primary ms-2">Điều Kiện</a>
+                                    </p>
+                                    @if (!canApply)
+                                    {
+                                        <small class="text-danger d-block">Chưa đủ điều kiện đơn hàng tối thiểu</small>
+                                    }
+                                </div>
+                                <div class="voucher-modal-select">
+                                    <input type="radio" class="form-check-input voucher-radio" name="SelectedVoucherRadio" value="@item.VoucherUserId" data-discount="@item.VoucherIdNavigation.DiscountVoucher" data-name="@item.VoucherIdNavigation.VoucherName" @(canApply ? "" : "disabled") />
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted">Bạn không có voucher nào khả dụng.</p>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button id="confirmApplyVoucherBtn" type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://www.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientId&currency=USD"></script> @* Ensure currency=USD or your target currency *@
+    <script>
+        $(document).ready(function () {
+            // --- Toggle Shipping Fields ---
+            const shippingFields = $(".shipping-fields");
+            $("#GiongKhachHang").change(function () {
+                if ($(this).prop("checked")) {
+                    $(this).val(true);
+                    shippingFields.addClass("hidden");
+                } else {
+                    $(this).val(false);
+                    shippingFields.removeClass("hidden");
+                }
+            }).trigger('change'); // Trigger on load
+
+            // --- Payment Method Selection ---
+            const codSubmitBtn = $("#btnPlaceOrderCod");
+            const paypalContainer = $("#paypal-button-container");
+            const paypalPlaceholder = $("#paypalSubmitPlaceholder");
+
+            $('input[name="PaymentMethod"]').change(function() {
+                $('.payment-option').removeClass('selected');
+                $(this).closest('.payment-option').addClass('selected');
+
+                if ($(this).val() === 'PayPal') {
+                    codSubmitBtn.hide();
+                    paypalPlaceholder.show();
+                    paypalContainer.show();
+                } else { // COD or other methods that use the form submit
+                    codSubmitBtn.show();
+                    paypalPlaceholder.hide();
+                    paypalContainer.hide();
+                    // Update button text if needed for other methods
+                    if($(this).val() === 'COD') {
+                         codSubmitBtn.text('Đặt Hàng (COD)');
+                    } // Add else if for Bank Transfer etc.
+                }
+            });
+            // Initial check
+             $('input[name="PaymentMethod"]:checked').trigger('change');
+
+
+            // --- Voucher Logic ---
+            let selectedVoucherId = null;
+            let selectedVoucherDiscount = 0;
+            let selectedVoucherName = "";
+
+            // When radio button in modal changes
+            $('.voucher-radio').change(function() {
+                 if ($(this).is(':checked')) {
+                    selectedVoucherId = $(this).val();
+                    selectedVoucherDiscount = parseFloat($(this).data('discount')) || 0;
+                    selectedVoucherName = $(this).data('name');
+                }
+            });
+
+            // When clicking OK in modal
+            $("#confirmApplyVoucherBtn").click(function () {
+                updateOrderSummary();
+            });
+
+             // Function to update summary UI
+            function updateOrderSummary() {
+                const subtotal = parseFloat('@subtotal'); // Get subtotal from server-side variable
+                const shipping = parseFloat('@shippingCost'); // Get shipping from server-side variable
+                let discountAmount = 0;
+
+                const selectedVoucherInfoEl = $("#selectedVoucherInfo");
+                const discountRowEl = $("#discountRow");
+                const discountValueEl = $("#discountValue");
+                const finalTotalValueEl = $("#finalTotalValue");
+
+                if (selectedVoucherId && selectedVoucherDiscount > 0) {
+                    // Basic percentage calculation - Implement max discount logic if needed
+                    discountAmount = (subtotal * selectedVoucherDiscount) / 100;
+
+                    selectedVoucherInfoEl.text(`Đã áp dụng: ${selectedVoucherName} (-${formatCurrencyJS(discountAmount)})`).show();
+                    discountValueEl.text(`-${formatCurrencyJS(discountAmount)}`);
+                    discountRowEl.show();
+                } else {
+                    selectedVoucherInfoEl.hide().text('');
+                    discountRowEl.hide();
+                    discountValueEl.text('');
+                }
+
+                const finalTotal = subtotal + shipping - discountAmount;
+                finalTotalValueEl.text(formatCurrencyJS(finalTotal));
+
+                // --- IMPORTANT: Send selectedVoucherId to server on FORM SUBMIT ---
+                // You'll need to add a hidden input to your main form
+                // and update its value here if a voucher is selected.
+                $("#selectedVoucherHiddenInput").val(selectedVoucherId); // Assumes you add <input type="hidden" id="selectedVoucherHiddenInput" name="SelectedVoucherUserId" /> inside your <form>
+            }
+
+            // Helper to format currency in JS
+            function formatCurrencyJS(value) {
+                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', 'đ');
+            }
+
+            // Initial summary update on load (in case of page refresh with voucher selected server-side)
+            updateOrderSummary(); // You might need to pass initial voucher data from ViewBag/Model if applicable
+
+        }); // End document ready
+
+        // --- PayPal Buttons ---
+        // Ensure this is outside document ready or called appropriately
+        if (document.getElementById('paypal-button-container')) {
+             paypal.Buttons({
+                style: {
+                    layout: 'vertical',
+                    color: 'silver',
+                    shape: 'rect',
+                    label: 'paypal',
+                    tagline: false
+                },
+                createOrder: (data, actions) => {
+                    // --- IMPORTANT: Recalculate or fetch final total HERE ---
+                    // It's crucial the amount sent to PayPal matches the final displayed total
+                    // including voucher discount and shipping. Fetch it securely from your server.
+                    // For now, using a client-side value (less secure, use for demo only)
+                     const finalTotalText = $("#finalTotalValue").text().replace(/[^0-9]/g, ''); // Extract numbers
+                     const finalTotalUSD = (parseFloat(finalTotalText) / 23000).toFixed(2);
+                     console.log("Creating PayPal order for:", finalTotalUSD.toFixed(2));
+
+
+                    // Use server-side endpoint to create order and get ID
+                    return fetch("/Cart/create-paypal-order", {
+                            method: "post",
+                             headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            // Send necessary data like selected voucher, shipping etc.
+                             body: JSON.stringify({
+                                 // Example: Send amount in USD if required by PayPal
+                                 amount: finalTotalUSD.toFixed(2), // Send final calculated amount
+                                 currency: "USD"
+                                 // Add other details like items if needed by your backend
+                             })
+                        }).then(response => {
+                            if (!response.ok) {
+                                return response.json().then(error => { console.error("PayPal Create Order Error:", error); throw new Error(error.message || 'Failed to create PayPal order'); });
+                            }
+                            return response.json();
+                        }).then(order => {
+                            console.log("PayPal Order ID:", order.id);
+                            return order.id; // Return the order ID obtained from server
+                        }).catch(error => {
+                            console.error('Error creating PayPal order:', error);
+                            alert('Lỗi: Không thể tạo đơn hàng PayPal. Vui lòng thử lại. ' + error.message);
+                            // Optionally re-enable the COD button or show an error message
+                         });
+                },
+                onApprove: (data, actions) => {
+                    console.log("PayPal onApprove data:", data);
+                     // --- IMPORTANT: Capture order on server-side ---
+                     // Also pass form data (address, notes, selected voucher ID) here
+                    const formData = new FormData(document.querySelector('form[asp-action="Checkout"]')); // Get form data
+                    // Add PayPal OrderID
+                    formData.append('paypalOrderId', data.orderID);
+                    // Add Selected Voucher ID if any (already in hidden input)
+
+                    return fetch(`/Cart/capture-paypal-order`, {
+                            method: "post",
+                            body: new URLSearchParams(formData) // Send form data
+                        }).then(response => {
+                            if (!response.ok) {
+                                 return response.json().then(error => { console.error("PayPal Capture Error:", error); throw new Error(error.message || 'Payment capture failed'); });
+                            }
+                            // Redirect on success
+                            window.location.href = "/Cart/PaymentSuccess";
+                        }).catch(error => {
+                            console.error('Error capturing PayPal order:', error);
+                             alert('Lỗi: Không thể hoàn tất thanh toán PayPal. Vui lòng thử lại hoặc chọn phương thức khác. ' + error.message);
+                             // Handle error, maybe show error message, re-enable buttons
+                        });
+                },
+                 onError: (err) => {
+                    console.error('PayPal Button Error:', err);
+                    alert('Đã xảy ra lỗi với PayPal. Vui lòng tải lại trang hoặc chọn phương thức thanh toán khác.');
+                 },
+                 onCancel: (data) => {
+                    console.log('PayPal payment cancelled:', data);
+                    // Handle cancellation (optional)
+                 }
+            }).render('#paypal-button-container').catch(err => {
+                 console.error("Failed to render PayPal Buttons:", err);
+                 // Handle error rendering buttons (e.g., show message)
+            });
+        }
+
+        // --- Add hidden input for voucher ID ---
+        // Ensure this runs after the form is loaded
+        $(function() {
+             if (!$('#selectedVoucherHiddenInput').length) {
+                $('form[asp-action="Checkout"]').append('<input type="hidden" id="selectedVoucherHiddenInput" name="SelectedVoucherUserId" value="" />');
+             }
+        });
+
+    </script>
+}

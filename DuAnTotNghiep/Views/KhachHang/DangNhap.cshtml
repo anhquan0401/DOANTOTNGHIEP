@@ -1,0 +1,323 @@
+﻿@model WebApplication1.ViewModels.LoginVM
+@{
+    ViewData["Title"] = "Đăng Nhập";
+    var successMessage = TempData["SuccessMessage"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+<style>
+    :root {
+        --primary-color: #007bff; /* Màu xanh dương chủ đạo */
+        --primary-hover: #0056b3;
+        --secondary-color: #6c757d;
+        --border-color: #e0e0e0;
+        --bg-light: #f8f9fa;
+        --text-dark: #212529;
+        --text-muted: #6c757d;
+        --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    /* 1. Nền trang và Container chính */
+    .login-page-wrapper {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        min-height: 80vh; /* Chiều cao tối thiểu */
+    }
+
+    /* 2. Thẻ Đăng nhập chính */
+    .login-card {
+        display: grid;
+        grid-template-columns: 40% 60%; /* Chia 2 cột: 40% cho branding, 60% cho form */
+        max-width: 1000px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 1.5rem; /* Bo góc thật mượt */
+        box-shadow: var(--shadow-lg);
+        overflow: hidden; /* Đảm bảo các panel con cũng bị bo góc */
+        transition: all 0.3s ease;
+    }
+
+        .login-card:hover {
+            box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.2);
+        }
+
+    /* 3. Panel Branding (Bên trái) */
+    .login-branding-panel {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+        color: white;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+        .login-branding-panel .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite; /* Hiệu ứng nảy */
+        }
+
+        .login-branding-panel h2 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-branding-panel p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+    /* Hiệu ứng nảy cho icon */
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+
+        40% {
+            transform: translateY(-20px);
+        }
+
+        60% {
+            transform: translateY(-10px);
+        }
+    }
+
+
+    /* 4. Panel Form (Bên phải) */
+    .login-form-panel {
+        padding: 3rem;
+    }
+
+        .login-form-panel h3 {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-form-panel .preamble {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+            .login-form-panel .preamble a {
+                color: var(--primary-color);
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .login-form-panel .preamble a:hover {
+                    text-decoration: underline;
+                }
+
+    /* 5. Định dạng Form */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+    /* Ghi đè class .form-control của bootstrap */
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+
+    /* Lỗi validation */
+    .text-danger {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .validation-summary-errors {
+        background: #fff1f2;
+        color: #ef4444;
+        border: 1px solid #ffe4e6;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+
+    .form-options {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1.5rem;
+    }
+
+        .form-options a {
+            color: var(--secondary-color);
+            font-size: 0.9375rem;
+            text-decoration: none;
+        }
+
+            .form-options a:hover {
+                color: var(--primary-color);
+                text-decoration: underline;
+            }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.875rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .btn-login:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px); /* Hiệu ứng nhấc lên */
+            box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+        }
+
+    /* 6. Responsive */
+    @@media (max-width: 992px) {
+        .login-card {
+            grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+        }
+
+        .login-branding-panel {
+            display: none; /* Ẩn panel branding trên di động cho gọn */
+        }
+
+        .login-form-panel {
+            padding: 2rem;
+        }
+    }
+
+</style>
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Đăng nhập</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Login</li>
+    </ol>
+</div>
+<div class="login-page-wrapper">
+    <div class="login-card">
+        <div class="login-branding-panel">
+            <div class="icon">👋</div>
+            <h2>Chào mừng trở lại!</h2>
+            <p>Đăng nhập để tiếp tục và trải nghiệm dịch vụ của chúng tôi.</p>
+        </div>
+
+        <div class="login-form-panel">
+            <h3>Đăng Nhập Tài Khoản</h3>
+            <div class="preamble">
+                Chưa có tài khoản?
+                <a asp-action="DangKy" asp-controller="KhachHang" asp-route-ReturnURL="@ViewBag.ReturnURL">
+                    Đăng ký ngay
+                </a>
+            </div>
+
+            <form asp-action="DangNhap" asp-controller="KhachHang">
+                <div asp-validation-summary="ModelOnly" class="text-danger validation-summary-errors"></div>
+                <div class="form-group">
+                    <label asp-for="@Model.Email">Email <sup>*</sup></label>
+                    <input asp-for="@Model.Email" type="text" class="form-control" placeholder="Nhập email...">
+                    <span class="text-danger" asp-validation-for="@Model.Email"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="@Model.MatKhau">Mật khẩu <sup>*</sup></label>
+                    <input asp-for="@Model.MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu...">
+                    <span class="text-danger" asp-validation-for="@Model.MatKhau"></span>
+                </div>
+
+                <div class="form-options">
+                    <a asp-action="forgotPassword" asp-controller="KhachHang">Quên mật khẩu?</a>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-login">Đăng nhập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Lấy thông báo từ TempData
+            var successMessage = '@TempData["SuccessMessage"]';
+            var errorMessage = '@TempData["ErrorMessage"]';
+            var redirectUrl = '@ViewBag.RedirectUrl';
+
+            // Hiển thị thông báo thành công (nếu có)
+            if (successMessage) {
+                toastr.success(successMessage);
+
+                // Chờ 1 giây (1000ms) trước khi chuyển hướng
+                setTimeout(function () {
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    }
+                }, 1000);
+            }
+
+            // Hiển thị thông báo lỗi (nếu có)
+            // Lưu ý: Lỗi chung đã được hiển thị bên trên form,
+            // toastr này có thể dùng cho các lỗi cụ thể hơn nếu muốn.
+            if (errorMessage) {
+                // Đã hiển thị lỗi trong form, nên có thể comment dòng này nếu không muốn lặp lại
+                toastr.error(errorMessage);
+
+            }
+        });
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "toastClass": "toast-custom"
+        };
+    </script>
+}

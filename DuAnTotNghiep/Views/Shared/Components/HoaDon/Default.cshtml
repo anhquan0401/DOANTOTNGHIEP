@@ -1,0 +1,61 @@
+﻿@model dynamic
+
+<div class="container mt-4">
+    <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "Index" ? "active" : "")" asp-action="Index">
+                Tất cả đơn mua
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.TotalOrders
+                </span>
+            </a>
+        </li>
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "NewOrder" ? "active" : "")" asp-action="NewOrder">
+                Mới đặt hàng
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.NewOrderCount
+                </span>
+            </a>
+        </li>
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "PendingShipment" ? "active" : "")" asp-action="PendingShipment">
+                Chờ giao hàng
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.PendingShipmentCount
+                </span>
+            </a>
+        </li>
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "Paid" ? "active" : "")" asp-action="Paid">
+                Mới thanh toán
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.PaidCount
+                </span>
+            </a>
+        </li>
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "LichSuHoaDon" ? "active" : "")" asp-action="LichSuHoaDon">
+                Đã giao hàng
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.LichSuHoaDonCount
+                </span>
+            </a>
+        </li>
+        <li class="nav-item position-relative">
+            <a class="nav-link @(Model.CurrentTab == "Cancelled" ? "active" : "")" asp-action="Cancelled">
+                Đã hủy
+                <span class="badge badge-pill position-absolute top-0 start-100 translate-middle"
+                      style="background: #ffb524 !important; color:white !important">
+                    @Model.CancelledCount
+                </span>
+            </a>
+        </li>
+    </ul>
+</div>
+

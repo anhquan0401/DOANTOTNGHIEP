@@ -1,0 +1,655 @@
+﻿@using Microsoft.AspNetCore.Authorization
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Quản trị hệ thống</title>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+
+    <!-- Bootstrap 3.3.2 -->
+    <link href="~/Admin/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- FontAwesome 4.3.0 -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- Theme style -->
+    <link href="~/Admin/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Admin/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Modern Header */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            border-bottom: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .main-header .logo {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+                font-weight: 700;
+                font-size: 20px;
+                transition: all 0.3s ease;
+            }
+
+                .main-header .logo:hover {
+                    background: rgba(255, 255, 255, 0.2) !important;
+                }
+
+            .main-header .navbar {
+                background: transparent !important;
+            }
+
+                .main-header .navbar .nav > li > a {
+                    color: white !important;
+                    transition: all 0.3s ease;
+                }
+
+                    .main-header .navbar .nav > li > a:hover {
+                        background: rgba(255, 255, 255, 0.1) !important;
+                    }
+
+                .main-header .navbar .sidebar-toggle {
+                    color: white !important;
+                }
+
+                    .main-header .navbar .sidebar-toggle:hover {
+                        background: rgba(255, 255, 255, 0.1) !important;
+                    }
+
+        /* Dropdown menus */
+        .dropdown-menu {
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+            border: none !important;
+            padding: 0.5rem !important;
+        }
+
+            .dropdown-menu > li > a {
+                border-radius: 0.5rem !important;
+                margin: 0.25rem 0 !important;
+                padding: 0.75rem 1rem !important;
+                transition: all 0.2s ease;
+            }
+
+                .dropdown-menu > li > a:hover {
+                    background: var(--light-color) !important;
+                    transform: translateX(5px);
+                }
+
+        /* Modern Sidebar */
+        .main-sidebar {
+            background: white !important;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            border-right: none !important;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0 !important;
+        }
+
+            .sidebar-menu > li {
+                margin: 0.25rem 0.75rem !important;
+            }
+
+                .sidebar-menu > li > a {
+                    border-radius: 0.75rem !important;
+                    padding: 0.875rem 1rem !important;
+                    color: var(--dark-color) !important;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    margin: 0.25rem 0;
+                }
+
+                    .sidebar-menu > li > a:hover {
+                        background: linear-gradient(135deg, var(--light-color), #e2e8f0) !important;
+                        transform: translateX(5px);
+                        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+                    }
+
+                .sidebar-menu > li.active > a {
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+                    color: white !important;
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                }
+
+                    .sidebar-menu > li.active > a i {
+                        color: white !important;
+                    }
+
+                .sidebar-menu > li > a > i {
+                    color: var(--primary-color) !important;
+                    font-size: 1.125rem;
+                    margin-right: 0.75rem;
+                }
+
+            .sidebar-menu .header {
+                color: var(--primary-color) !important;
+                font-weight: 700 !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.1em !important;
+                padding: 1rem 1rem 0.5rem !important;
+                margin-top: 1rem !important;
+            }
+
+        /* User Panel */
+        .user-panel {
+            background: linear-gradient(135deg, var(--light-color), #e2e8f0) !important;
+            border-radius: 1rem !important;
+            padding: 1.25rem !important;
+            margin: 1rem 0.75rem !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+            .user-panel .image img {
+                border: 3px solid white !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            .user-panel .info {
+                color: var(--dark-color) !important;
+                font-weight: 600 !important;
+            }
+
+                .user-panel .info a {
+                    color: var(--success-color) !important;
+                    font-size: 0.875rem;
+                }
+
+        /* Search Form */
+        .sidebar-form {
+            margin: 1rem 0.75rem !important;
+        }
+
+            .sidebar-form .form-control {
+                border-radius: 2rem !important;
+                border: 2px solid var(--border-color) !important;
+                padding: 0.625rem 1rem !important;
+                transition: all 0.3s ease;
+            }
+
+                .sidebar-form .form-control:focus {
+                    border-color: var(--primary-color) !important;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+                }
+
+            .sidebar-form .btn {
+                border-radius: 0 2rem 2rem 0 !important;
+                background: var(--primary-color) !important;
+                border: none !important;
+                color: white !important;
+            }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            background: var(--light-color) !important;
+            min-height: calc(100vh - 101px) !important;
+        }
+
+        /* Footer */
+        .main-footer {
+            background: white !important;
+            border-top: 2px solid var(--border-color) !important;
+            padding: 1.5rem !important;
+            color: var(--dark-color) !important;
+        }
+
+        /* Chat Button */
+        #openChatBtn {
+            position: fixed !important;
+            bottom: 2rem !important;
+            right: 2rem !important;
+            z-index: 1050 !important;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            border: none !important;
+            border-radius: 3rem !important;
+            padding: 1rem 1.5rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+            transition: all 0.3s ease !important;
+        }
+
+            #openChatBtn:hover {
+                transform: translateY(-3px) scale(1.05) !important;
+                box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5) !important;
+            }
+
+            #openChatBtn i {
+                margin-right: 0.5rem;
+                font-size: 1.25rem;
+            }
+
+        /* Chat Box */
+        #adminChatBox {
+            position: fixed !important;
+            bottom: 2rem !important;
+            right: 2rem !important;
+            width: 380px !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+            border: none !important;
+            overflow: hidden !important;
+            animation: slideInUp 0.3s ease !important;
+        }
+
+
+        #adminChatBox .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            color: white !important;
+            padding: 1.25rem !important;
+            border: none !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            #adminChatBox .card-header span {
+                font-weight: 700;
+                font-size: 1rem;
+            }
+
+        #closeChatBtn {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 50% !important;
+            padding: 0.5rem !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            #closeChatBtn:hover {
+                background: rgba(255, 255, 255, 0.3) !important;
+                transform: rotate(90deg);
+            }
+
+        #adminChatBox .card-body {
+            background: white !important;
+            padding: 1rem !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
+        }
+
+        /* User List */
+        #userList {
+            margin-bottom: 1rem !important;
+            border-radius: 0.75rem !important;
+            overflow: hidden !important;
+        }
+
+            #userList .list-group-item {
+                border: 1px solid var(--border-color) !important;
+                cursor: pointer !important;
+                transition: all 0.2s ease !important;
+                padding: 0.875rem 1rem !important;
+                border-radius: 0.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+                #userList .list-group-item:hover {
+                    background: linear-gradient(135deg, var(--light-color), #e2e8f0) !important;
+                    transform: translateX(5px);
+                    border-color: var(--primary-color) !important;
+                }
+
+                #userList .list-group-item.active {
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+                    border-color: var(--primary-color) !important;
+                    color: white !important;
+                }
+
+        /* Message Container */
+        #messageContainer {
+            min-height: 150px !important;
+            padding: 0.75rem !important;
+            background: var(--light-color) !important;
+            border-radius: 0.75rem !important;
+            margin-top: 0.5rem !important;
+        }
+
+            #messageContainer > div {
+                padding: 0.625rem 0.875rem !important;
+                border-radius: 1rem !important;
+                margin-bottom: 0.5rem !important;
+                max-width: 80%;
+                animation: fadeIn 0.3s ease;
+            }
+
+
+        #messageContainer .text-end {
+            margin-left: auto !important;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            color: white !important;
+        }
+
+        #messageContainer .text-start {
+            margin-right: auto !important;
+            background: white !important;
+            border: 2px solid var(--border-color) !important;
+            color: var(--dark-color) !important;
+        }
+
+        /* Chat Footer */
+        #adminChatBox .card-footer {
+            background: white !important;
+            border-top: 2px solid var(--border-color) !important;
+            padding: 1rem !important;
+        }
+
+        #messageInput {
+            border: 2px solid var(--border-color) !important;
+            border-radius: 2rem 0 0 2rem !important;
+            padding: 0.75rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+            #messageInput:focus {
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            }
+
+        #sendMsgBtn {
+            background: linear-gradient(135deg, var(--success-color), #059669) !important;
+            border: none !important;
+            border-radius: 0 2rem 2rem 0 !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease;
+        }
+
+            #sendMsgBtn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-dark);
+            }
+
+        /* Badges and Labels */
+        .label {
+            border-radius: 2rem !important;
+            padding: 0.375rem 0.75rem !important;
+            font-weight: 600 !important;
+        }
+
+        /* Dropdown badge animation */
+        .navbar .label {
+            animation: pulse 2s infinite;
+        }
+
+        
+
+        /* Additional improvements */
+        .treeview-menu {
+            background: var(--light-color) !important;
+            border-radius: 0.5rem !important;
+            margin: 0.5rem 0 !important;
+            padding: 0.5rem 0 !important;
+        }
+
+            .treeview-menu > li > a {
+                padding-left: 2.5rem !important;
+            }
+
+        .sidebar-menu .treeview.active > a {
+            background: linear-gradient(135deg, var(--light-color), #e2e8f0) !important;
+        }
+    </style>
+</head>
+<body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            <a href="#" class="logo">
+                <b>🎯 Admin</b>Panel
+            </a>
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <!-- Messages -->
+                        <li class="dropdown messages-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-envelope-o"></i>
+                                <span class="label label-success">4</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">📧 Bạn có 4 tin nhắn mới</li>
+                                <li>
+                                    <ul class="menu">
+                                        <li>
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="~/Admin/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+                                                </div>
+                                                <h4>
+                                                    Support Team
+                                                    <small><i class="fa fa-clock-o"></i> 5 phút</small>
+                                                </h4>
+                                                <p>Có vấn đề gì cần hỗ trợ không?</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">Xem tất cả tin nhắn</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Notifications -->
+                        <li class="dropdown notifications-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bell-o"></i>
+                                <span class="label label-warning">10</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">🔔 Bạn có 10 thông báo</li>
+                                <li>
+                                    <ul class="menu">
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-users text-aqua"></i> 5 thành viên mới hôm nay
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-shopping-cart text-green"></i> 25 đơn hàng mới
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">Xem tất cả</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- User Account -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-user"></i>
+                                    <span class="hidden-xs">@User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="user-footer">
+                                        <div class="pull-left">
+                                            <a href="#" class="btn btn-default btn-flat">👤 Hồ sơ</a>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a asp-area="Admin" asp-controller="AccountAdmin" asp-action="LogoutAdmin" class="btn btn-default btn-flat">🚪 Đăng xuất</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a asp-area="Admin" asp-controller="AccountAdmin" asp-action="LoginAdmin">
+                                    <i class="fa fa-sign-in"></i> Đăng nhập
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <aside class="main-sidebar">
+                <section class="sidebar">
+                    <!-- User Panel -->
+                    <div class="user-panel">
+                        <div class="pull-left image">
+                            <img src="~/Admin/dist/img/IMG_6799.JPG" class="img-circle" alt="User Image" />
+                        </div>
+                        <div class="pull-left info">
+                            <p>Trần Lê Anh Quân</p>
+                            <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                        </div>
+                    </div>
+
+                    <!-- Search Form -->
+                    <form action="#" method="get" class="sidebar-form">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" placeholder="🔍 Tìm kiếm..." />
+                            <span class="input-group-btn">
+                                <button type='submit' name='search' id='search-btn' class="btn btn-flat">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+
+                    <!-- Sidebar Menu -->
+                        @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+                        <ul class="sidebar-menu">
+                            <li class="header">📊 ĐIỀU HƯỚNG CHÍNH</li>
+
+                            @{
+                                // 1. Chỉ Admin
+                                var isAdmin = (await AuthorizationService.AuthorizeAsync(User, "RequireAdminRole")).Succeeded;
+
+                                // 2. Cả Admin HOẶC Nhân viên (dùng Policy gộp RequireStaffAccess)
+                                // Nếu bạn chưa tạo policy gộp, bạn phải tự kiểm tra 2 Claim: User.IsInRole("QuanTriVien") || User.IsInRole("NhanVien")
+                                var hasStaffAccess = (await AuthorizationService.AuthorizeAsync(User, "RequireStaffAccess")).Succeeded;
+                            }
+
+                            <li class="active">
+                                <a asp-area="Admin" asp-controller="HomeAdmin" asp-action="Index">
+                                    <i class="fa fa-dashboard"></i> <span>Trang chủ</span>
+                                </a>
+                            </li>
+
+                            @* --- Chức năng chung: Admin & Nhân viên (RequireStaffAccess) --- *@
+                            @if (hasStaffAccess)
+                            {
+                                <li>
+                                    <a asp-area="Admin" asp-controller="HangHoaAdmin" asp-action="Index">
+                                        <i class="fa fa-shopping-bag"></i> <span>Sản phẩm</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-area="Admin" asp-controller="HoaDonAdmin" asp-action="Index">
+                                        <i class="fa fa-file-text"></i> <span>Hóa đơn</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-area="Admin" asp-controller="GopYAdmin" asp-action="Index">
+                                        <i class="fa fa-comments"></i> <span>Liên hệ</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-area="Admin" asp-controller="VoucherAdmin" asp-action="Index">
+                                        <i class="fa fa-ticket"></i> <span>Voucher</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @* --- Chức năng Độc quyền: Chỉ Admin (RequireAdminRole) --- *@
+                            @if (isAdmin)
+                            {
+                                <li>
+                                <a asp-area="Admin" asp-controller="NhanVienAdmin" asp-action="Index">
+                                        <i class="fa fa-users"></i> <span>Nhân Viên</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-area="Admin" asp-controller="KhachHangAdmin" asp-action="Index">
+                                        <i class="fa fa-users"></i> <span>Người dùng</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="header">⚙️ CÀI ĐẶT</li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-cog"></i> <span>Cài đặt hệ thống</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-book"></i> <span>Tài liệu</span>
+                                </a>
+                            </li>
+                        </ul>
+                </section>
+            </aside>
+        }
+
+        <div class="content-wrapper">
+            @RenderBody()
+        </div>
+
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 3.0
+            </div>
+            <strong>Copyright &copy; 2024 <a href="#">Your Company</a>.</strong> All rights reserved.
+        </footer>
+
+    </div>
+
+    @await Html.PartialAsync("_AdminChatPartial")
+
+    <!-- Scripts -->
+    <script src="~/Admin/plugins/jQuery/jQuery-2.1.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <script>$.widget.bridge('uibutton', $.ui.button);</script>
+    <script src="~/Admin/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Admin/dist/js/app.min.js"></script>
+   
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

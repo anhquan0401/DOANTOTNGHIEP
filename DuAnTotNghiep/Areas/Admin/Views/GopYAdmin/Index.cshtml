@@ -1,0 +1,83 @@
+﻿@model IEnumerable<WebApplication1.Data.GopY>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MaKh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoiDung)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgayGy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HoTen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DienThoai)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanTraLoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TraLoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgayTl)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaKh)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoiDung)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgayGy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoTen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DienThoai)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanTraLoi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TraLoi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgayTl)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaGy">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaGy">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaGy">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

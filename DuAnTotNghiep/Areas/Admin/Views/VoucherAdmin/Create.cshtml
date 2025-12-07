@@ -1,0 +1,321 @@
+﻿@model WebApplication1.Areas.Admin.Models.VoucherAdminVM
+
+@{
+    ViewData["Title"] = "Thêm Voucher Mới";
+    // Optional: Define layout if using a specific Admin layout
+    // Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    /* 1. Variables & Base Styles */
+    :root {
+        --primary-color: #007bff; /* Blue */
+        --primary-hover: #0056b3;
+        --success-color: #198754; /* Bootstrap Green */
+        --success-hover: #157347;
+        --secondary-color: #6c757d; /* Gray */
+        --secondary-hover: #5c636a;
+        --border-color: #dee2e6; /* Bootstrap Border */
+        --bg-light: #f8f9fa; /* Bootstrap Light */
+        --text-dark: #212529;
+        --text-muted: #6c757d;
+        --shadow-soft: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container {
+        max-width: 900px; /* Limit width for better readability */
+        margin: 2rem auto;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-card {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-soft);
+        overflow: hidden; /* Ensure child elements adhere to border-radius */
+    }
+
+    .form-card-header {
+        background: var(--bg-light);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+        .form-card-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-card-header i { /* Style icon */
+            color: var(--primary-color);
+        }
+
+
+    .form-card-body {
+        padding: 2rem;
+    }
+
+    /* 2. Form Control Styling */
+    .form-group { /* Add this class to divs containing label+input+validation */
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+            outline: none;
+        }
+
+    /* Remove default arrows for number inputs (optional, for cleaner look) */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield; /* Firefox */
+    }
+
+
+    /* Input groups for symbols/icons */
+    .input-group {
+        position: relative; /* Needed for absolute positioning of span */
+    }
+
+        .input-group .form-control {
+            padding-right: 3rem; /* Make space for the symbol */
+        }
+
+    .input-group-text {
+        position: absolute;
+        right: 1px; /* Align inside border */
+        top: 1px; /* Align inside border */
+        bottom: 1px; /* Align inside border */
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        background: var(--bg-light);
+        border-left: 1px solid var(--border-color);
+        border-radius: 0 0.5rem 0.5rem 0;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    /* Specific styling for date input */
+    .input-group.date .form-control {
+        padding-right: 3rem; /* Ensure space for icon */
+    }
+
+    .input-group.date .input-group-text {
+        background: transparent;
+        border-left: none; /* Icon shouldn't have left border */
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+
+
+    /* Textarea */
+    textarea.form-control {
+        min-height: 100px;
+    }
+
+    /* Checkbox */
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-left: 0; /* Override default bootstrap padding */
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0;
+        cursor: pointer;
+        border-radius: 0.35rem; /* Slightly rounded square */
+        border: 2px solid var(--border-color);
+    }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+    .form-check-label {
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    /* Validation */
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    /* 3. Button Styling */
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end; /* Align buttons to the right */
+    }
+
+    .btn {
+        padding: 0.6rem 1.25rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none; /* For link buttons */
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+        color: white;
+    }
+
+        .btn-success:hover {
+            background-color: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+        }
+
+    .btn-secondary-outline { /* Custom class for cancel */
+        background-color: transparent;
+        border: 2px solid var(--secondary-color);
+        color: var(--secondary-color);
+    }
+
+        .btn-secondary-outline:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2><i class="bi bi-ticket-percent-fill"></i> Thêm Voucher Mới</h2>
+        </div>
+        <div class="form-card-body">
+            <form asp-action="Create" method="post" class="row g-3">
+                <div asp-validation-summary="ModelOnly" class="text-danger col-12"></div> <div class="col-md-6 form-group">
+                    <label asp-for="VoucherName" class="form-label"></label>
+                    <input asp-for="VoucherName" class="form-control" placeholder="vd: Giảm giá mùa hè..." />
+                    <span asp-validation-for="VoucherName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="VoucherCode" class="form-label"></label>
+                    <input asp-for="VoucherCode" class="form-control" placeholder="vd: SUMMER25..." />
+                    <span asp-validation-for="VoucherCode" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="DiscountVoucher" class="form-label"></label>
+                    <div class="input-group">
+                        <input asp-for="DiscountVoucher" class="form-control" type="number" min="0" max="100" placeholder="vd: 10" />
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <span asp-validation-for="DiscountVoucher" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="OrderMinimum" class="form-label"></label>
+                    <div class="input-group">
+                        <input asp-for="OrderMinimum" class="form-control" type="number" step="1000" placeholder="Bỏ trống nếu không yêu cầu" />
+                        <span class="input-group-text">đ</span>
+                    </div>
+                    <span asp-validation-for="OrderMinimum" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="UserLimit" class="form-label"></label>
+                    <input asp-for="UserLimit" class="form-control" type="number" min="1" placeholder="Bỏ trống nếu không giới hạn" />
+                    <span asp-validation-for="UserLimit" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="ExpirationDate" class="form-label"></label>
+                    <div class="input-group date">
+                        <input asp-for="ExpirationDate" class="form-control" type="date" />
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+                    <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 form-group">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả ngắn về voucher (tùy chọn)..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 form-group">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" checked /> <label asp-for="IsActive" class="form-check-label"></label>
+                    </div>
+                </div>
+
+                <div class="col-12 form-actions">
+                    <a asp-action="Index" class="btn btn-secondary-outline">Hủy</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle-fill me-1"></i> Lưu Voucher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Optional: Set min date for expiration date picker to today
+        $(document).ready(function() {
+            var today = new Date().toISOString().split('T')[0];
+            $('#ExpirationDate').attr('min', today);
+        });
+    </script>
+}
