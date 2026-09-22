@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  webapplication1:
+    image: webapplication1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    # Nếu dự án của bạn có kết nối database (ví dụ SQL Server, MySQL),
+    # bạn có thể khai báo thêm service database ở dưới đây.
