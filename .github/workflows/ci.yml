@@ -21,13 +21,16 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./DuAnTotNghiep
         
       - name: Build
         run: dotnet build --no-restore
+        working-directory: ./DuAnTotNghiep
 
       # Chạy kiểm tra xem Dockerfile cấu hình có đúng không và có build thành công không
       - name: Build Docker Image
         run: docker build -t my-dotnet-app:${{ github.sha }} .
+        working-directory: ./DuAnTotNghiep
 
       # Báo thành công về Telegram
       - name: Send Telegram Success
